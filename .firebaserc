@@ -1,0 +1,6 @@
+{
+  "projects": {
+    "default": "gsvrisk",
+    "prod": "gsvrisk"
+  }
+}
