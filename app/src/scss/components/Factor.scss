@@ -1,0 +1,53 @@
+.Factor
+{
+  color: $white;
+
+  &-label
+  {
+    display: block;
+    position: relative;
+    padding-top: $gutter-mini * 2;
+  }
+
+  &-prompt
+  {
+    @include font-sizes(24px, 32px);
+    position: relative;
+    text-align: center;
+    bottom: $gutter * 2;
+    transition: all $transition-fast;
+  }
+
+  &-input
+  {
+    @include font-sizes(24px, 32px);
+    width: 50%;
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
+    appearance: none;
+    text-align: center;
+    background-color: transparent;
+    outline: 0;
+    border-bottom: $border-default $blue-light;
+    transition: all $transition-fast;
+
+    &:focus
+    {
+      width: 75%;
+    }
+
+    &::-webkit-inner-spin-button
+    {
+      appearance: none;
+      margin: 0;
+    }
+  }
+
+  &-input[hasvalue=true] + .Factor-prompt,
+  &-input:focus + .Factor-prompt
+  {
+    @include font-sizes(16px, 24px);
+    bottom: $gutter * 4;
+  }
+}
