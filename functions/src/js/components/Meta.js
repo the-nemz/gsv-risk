@@ -18,16 +18,16 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var Main = function (_React$Component) {
-  _inherits(Main, _React$Component);
+var Meta = function (_React$Component) {
+  _inherits(Meta, _React$Component);
 
-  function Main(props) {
-    _classCallCheck(this, Main);
+  function Meta(props) {
+    _classCallCheck(this, Meta);
 
-    return _possibleConstructorReturn(this, (Main.__proto__ || Object.getPrototypeOf(Main)).call(this, props));
+    return _possibleConstructorReturn(this, (Meta.__proto__ || Object.getPrototypeOf(Meta)).call(this, props));
   }
 
-  _createClass(Main, [{
+  _createClass(Meta, [{
     key: 'render',
     value: function render() {
       var facts = this.props.facts.map(function (fact, i) {
@@ -38,14 +38,14 @@ var Main = function (_React$Component) {
         );
       });
       return _react2.default.createElement(
-        'ul',
+        'title',
         null,
-        facts
+        'LMAO Could this work??'
       );
     }
   }]);
 
-  return Main;
+  return Meta;
 }(_react2.default.Component);
 
-exports.default = Main;
+exports.default = Meta;

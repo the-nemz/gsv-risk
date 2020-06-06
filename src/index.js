@@ -1,9 +1,9 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 
-import Main from './js/components/Main.js';
+import Meta from './js/components/Meta.js';
 import getFacts from './js/facts.js';
 
 getFacts().then(facts => {
-  ReactDOM.render(<Main facts={facts} />, document.getElementById('root'));
+  ReactDOM.render(<Meta facts={facts} />, document.getElementById('root'));
 })

@@ -1,6 +1,6 @@
 import React from 'react';
 
-export default class Main extends React.Component {
+export default class Meta extends React.Component {
 
   constructor(props) {
     super(props);
@@ -11,9 +11,7 @@ export default class Main extends React.Component {
       return <li key={i}>{fact.text}</li>
     });
     return (
-      <ul>
-        {facts}
-      </ul>
+      <title>LMAO Could this work??</title>
     );
   }
 }

@@ -1,0 +1,30 @@
+@mixin Link
+{
+  text-decoration: none;
+
+  @include hoverActive
+  {
+    text-decoration: underline;
+  }
+}
+
+.Link
+{
+  @include Link;
+}
+
+@mixin NoPointer
+{
+  // Use for innermost no pinter events wrapper
+  pointer-events: none;
+
+  & > *
+  {
+    pointer-events: all;
+  }
+}
+
+.NoPointer
+{
+  @include NoPointer;
+}

@@ -1,0 +1,26 @@
+$font-main: 'Lato', sans-serif;
+$gutter: 16px;
+$gutter-mini: 12px;
+
+$black: #000;
+$white: #fff;
+$gray-dark: #353638;
+$gray-light: #cac9c7;
+$black-transparent: rgba(0, 0, 0, 0.55);
+$white-transparent: rgba(255, 255, 255, 0.55);
+
+$border-default: 2px solid;
+$border-thin: 1px solid;
+$border-thin-transparent: 1px solid transparent;
+
+$transition-slow: 400ms ease-in-out;
+$transition-fast: 200ms ease-in-out;
+$transition-xfast: 100ms ease-in-out;
+
+$screen-xs-min: 480px;
+$screen-xs-max: 767px;
+$screen-sm-min: 768px;
+$screen-sm-max: 991px;
+$screen-md-min: 992px;
+$screen-md-max: 1199px;
+$screen-lg-min: 1200px;
