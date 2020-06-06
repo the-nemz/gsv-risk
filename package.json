@@ -1,7 +1,6 @@
 {
   "dependencies": {
     "css-loader": "^3.5.3",
-    "debug": "^4.1.1",
     "isomorphic-fetch": "^2.2.1",
     "node-sass": "^4.11.0",
     "react": "^16.13.1",
@@ -29,6 +28,6 @@
   },
   "scripts": {
     "start": "webpack",
-    "babel": "babel src -d functions/src && babel index.js -d functions"
+    "babel": "babel server -d functions/server && babel index.js -d functions"
   }
 }
