@@ -33,7 +33,7 @@ export default class Input extends React.Component {
       <div className="Factor">
         <label className="Factor-label">
           <input className={`Factor-input Factor-input--${type}`} type={type}
-                value={input ? input : ''} hasvalue={input || input === 0 ? 'true' : 'false'}
+                value={input || input === 0 ? input : ''} hasvalue={input || input === 0 ? 'true' : 'false'}
                 onChange={(e) => this.handleTextChange(e.target.value)}
                 onBlur={(e) => this.handleTextBlur(e.target.value)}>
           </input>

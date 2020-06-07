@@ -1,0 +1,24 @@
+.Results
+{
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  height: 60%;
+
+  &-bar
+  {
+    position: relative;
+    width: $gutter*6;
+    transition: all $transition-slow;
+  }
+
+  &-num
+  {
+    @include font-sizes(32px, 48px);
+    font-weight: bold;
+    text-align: center;
+    position: absolute;
+    bottom: 100%;
+    width: 100%;
+  }
+}

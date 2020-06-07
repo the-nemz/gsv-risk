@@ -1,12 +1,10 @@
 .Factor
 {
-  color: $white;
-
   &-label
   {
     display: block;
     position: relative;
-    padding-top: $gutter-mini * 2;
+    padding-top: $gutter-mini*2;
   }
 
   &-prompt
@@ -14,7 +12,7 @@
     @include font-sizes(24px, 32px);
     position: relative;
     text-align: center;
-    bottom: $gutter * 2;
+    bottom: $gutter*2;
     transition: all $transition-fast;
   }
 
@@ -44,10 +42,12 @@
     }
   }
 
-  &-input[hasvalue=true] + .Factor-prompt,
-  &-input:focus + .Factor-prompt
+  &-input[hasvalue=true] + &-prompt,
+  &-input:focus + &-prompt,
+  &-label:hover &-input[hasvalue=false] + &-prompt
   {
     @include font-sizes(16px, 24px);
-    bottom: $gutter * 4;
+    bottom: $gutter*4;
+    padding-top: $gutter/2;
   }
 }
