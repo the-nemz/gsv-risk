@@ -16,6 +16,12 @@ export default class Input extends React.Component {
     });
   }
 
+  handleKeyPress(e, value) {
+    if (e.key === 'Enter') {
+      this.handleTextBlur(value);
+    }
+  }
+
   handleTextBlur(value) {
     let factor = this.props.factor;
     factor.input = value || value === 0 ? value : null;
@@ -28,14 +34,16 @@ export default class Input extends React.Component {
 
   render() {
     const input = this.state.inputChanging ? this.state.input : this.props.factor.input;
-    const type = this.props.factor.type ? this.props.factor.type : 'text'
+    const type = this.props.factor.type ? this.props.factor.type : 'text';
+    const value = input || input === 0 ? input + '' : '';
     return (
       <div className="Factor">
         <label className="Factor-label">
-          <input className={`Factor-input Factor-input--${type}`} type={type}
-                value={input || input === 0 ? input : ''} hasvalue={input || input === 0 ? 'true' : 'false'}
-                onChange={(e) => this.handleTextChange(e.target.value)}
-                onBlur={(e) => this.handleTextBlur(e.target.value)}>
+          <input className={`Factor-input Factor-input--${type}`}
+                 type={type} value={value} hasvalue={value ? 'true' : 'false'}
+                 onChange={(e) => this.handleTextChange(e.target.value)}
+                 onKeyPress={(e) => this.handleKeyPress(e, value)}
+                 onBlur={(e) => this.handleTextBlur(e.target.value)}>
           </input>
           <div className="Factor-prompt">
             {this.props.factor.prompt}
