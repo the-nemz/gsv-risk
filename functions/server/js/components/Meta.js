@@ -10,6 +10,8 @@ var _react = require('react');
 
 var _react2 = _interopRequireDefault(_react);
 
+var _reactHelmet = require('react-helmet');
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -30,18 +32,22 @@ var Meta = function (_React$Component) {
   _createClass(Meta, [{
     key: 'render',
     value: function render() {
-      var facts = this.props.facts.map(function (fact, i) {
-        return _react2.default.createElement(
-          'li',
-          { key: i },
-          fact.text
-        );
+      return _react2.default.createElement(_reactHelmet.Helmet, {
+        title: 'Grocery Store Visits | Calculate COVID-19 risk in terms we all know - going to the grocery store.',
+        meta: [{
+          name: 'og:site_name',
+          content: 'GSV Risk'
+        }, {
+          name: 'og:title',
+          content: 'Grocery Store Visits | Calculate COVID-19 risk in terms we all know - going to the grocery store.'
+        }, {
+          name: 'description',
+          content: 'GSV Risk is a web application that allows you to approximate an event\'s COVID-19 risk in units we all know - grocery store visits.'
+        }, {
+          name: 'og:description',
+          content: 'GSV Risk is a web application that allows you to approximate an event\'s COVID-19 risk in units we all know - grocery store visits.'
+        }]
       });
-      return _react2.default.createElement(
-        'title',
-        null,
-        'LMAO Could this work??'
-      );
     }
   }]);
 
