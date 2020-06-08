@@ -29,6 +29,8 @@
   },
   "scripts": {
     "start": "webpack",
-    "babel": "babel server -d functions/server && babel index.js -d functions"
+    "babel": "babel server -d functions/server && babel index.js -d functions",
+    "buildall": "node build.js",
+    "serveall": "firebase serve --only functions,hosting"
   }
 }
