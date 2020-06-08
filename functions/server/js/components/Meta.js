@@ -12,6 +12,8 @@ var _react2 = _interopRequireDefault(_react);
 
 var _reactHelmet = require('react-helmet');
 
+var _util = require('../_util.js');
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -27,25 +29,124 @@ var Meta = function (_React$Component) {
     _classCallCheck(this, Meta);
 
     return _possibleConstructorReturn(this, (Meta.__proto__ || Object.getPrototypeOf(Meta)).call(this, props));
+
+    // const queryParams = props.queryParams ? props.queryParams : {};
+    // let factors = INITIAL_FACTORS;
+
+    // let hasValidQuery = false;
+    // for (const factor of factors) {
+    //   if (factor.id in queryParams) {
+    //     factor.input = queryParams[factor.id];
+    //     factor.input = getInputFromFactor(factor);
+    //     if (factor.input !== null) {
+    //       hasValidQuery = true;
+    //     }
+    //   }
+    // }
+
+    // this.state = {
+    //   factors: factors,
+    //   useDefaults: !hasValidQuery
+    // };
   }
 
   _createClass(Meta, [{
+    key: 'getDescription',
+    value: function getDescription(factors, gsv) {
+      var textFactors = [];
+      var _iteratorNormalCompletion = true;
+      var _didIteratorError = false;
+      var _iteratorError = undefined;
+
+      try {
+        for (var _iterator = factors[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+          var factor = _step.value;
+
+          if (factor.input !== null) {
+            if (factor.options) {
+              var _iteratorNormalCompletion2 = true;
+              var _didIteratorError2 = false;
+              var _iteratorError2 = undefined;
+
+              try {
+                for (var _iterator2 = factor.options[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+                  var option = _step2.value;
+
+                  if (option.value === factor.input) {
+                    textFactors.push(option.label.toLowerCase());
+                  }
+                }
+              } catch (err) {
+                _didIteratorError2 = true;
+                _iteratorError2 = err;
+              } finally {
+                try {
+                  if (!_iteratorNormalCompletion2 && _iterator2.return) {
+                    _iterator2.return();
+                  }
+                } finally {
+                  if (_didIteratorError2) {
+                    throw _iteratorError2;
+                  }
+                }
+              }
+            } else {
+              textFactors.push(factor.meta.replace('[INPUT]', factor.input));
+            }
+          }
+        }
+      } catch (err) {
+        _didIteratorError = true;
+        _iteratorError = err;
+      } finally {
+        try {
+          if (!_iteratorNormalCompletion && _iterator.return) {
+            _iterator.return();
+          }
+        } finally {
+          if (_didIteratorError) {
+            throw _iteratorError;
+          }
+        }
+      }
+
+      var allTextFactors = '';
+      if (textFactors.length === 1) {
+        allTextFactors = textFactors[0];
+      } else if (textFactors.length === 2) {
+        allTextFactors = textFactors[0] + ' and ' + textFactors[1];
+      } else if (textFactors.length >= 3) {
+        allTextFactors = textFactors.slice(0, -1).join(', ') + ', and ' + textFactors[textFactors.length - 1];
+      }
+
+      return 'GSV Risk | An event with ' + allTextFactors + ' has COVID-19 risk comparable to ' + (0, _util.getGsvText)(gsv) + ' grocery store visits.';
+    }
+  }, {
     key: 'render',
     value: function render() {
+      var title = 'Grocery Store Visits | Calculate COVID-19 risk in terms we all know - going to the grocery store.';
+      var description = 'GSV Risk is a web application that allows you to approximate an event\'s COVID-19 risk in units we all know - grocery store visits.';
+
+      if (!this.props.useDefaults) {
+        var gsv = (0, _util.calculateGsv)(this.props.factors);
+        title = 'GSV Risk | ' + (0, _util.getGsvText)(gsv) + ' grocery store visits!';
+        description = this.getDescription(this.props.factors, gsv);
+      }
+
       return _react2.default.createElement(_reactHelmet.Helmet, {
-        title: 'Grocery Store Visits | Calculate COVID-19 risk in terms we all know - going to the grocery store.',
+        title: title,
         meta: [{
           name: 'og:site_name',
           content: 'GSV Risk'
         }, {
           name: 'og:title',
-          content: 'Grocery Store Visits | Calculate COVID-19 risk in terms we all know - going to the grocery store.'
+          content: title
         }, {
           name: 'description',
-          content: 'GSV Risk is a web application that allows you to approximate an event\'s COVID-19 risk in units we all know - grocery store visits.'
+          content: description
         }, {
           name: 'og:description',
-          content: 'GSV Risk is a web application that allows you to approximate an event\'s COVID-19 risk in units we all know - grocery store visits.'
+          content: description
         }]
       });
     }
