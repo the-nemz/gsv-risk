@@ -15,7 +15,7 @@
 
 @mixin NoPointer
 {
-  // Use for innermost no pinter events wrapper
+  // Use for innermost no pointer events wrapper
   pointer-events: none;
 
   & > *
@@ -62,4 +62,75 @@
 .l-container
 {
   @include l-container;
+}
+
+@mixin Select
+{
+  .Select__control
+  {
+    background-color: transparent;
+    border-radius: 0;
+    border: 0;
+    box-shadow: none;
+  }
+
+  .Select__placeholder
+  {
+    display: none;
+  }
+
+  .Select__value-container
+  {
+    padding: 0;
+    position: relative;
+    top: 4px;
+  }
+
+  .Select__single-value
+  {
+    @include font-sizes(24px, 32px);
+    color: inherit;
+    margin: 0;
+    width: 100%;
+    max-width: 100%;
+    text-align: center;
+    position: static;
+    transform: none;
+
+    & + div
+    {
+      display: none;
+    }
+  }
+
+  .Select__indicators
+  {
+    display: none;
+  }
+
+  .Select__menu
+  {
+    background-color: $blue-dark;
+    border-radius: 0;
+    margin: 0;
+    top: $gutter/4;
+  }
+
+  .Select__option
+  {
+    @include font-sizes(16px, 32px);
+    text-align: center;
+    background-color: $blue-dark;
+    padding: $gutter/4 $gutter-mini;
+
+    &:hover
+    {
+      background-color: $blue-medium;
+    }
+  }
+}
+
+.Select
+{
+  @include Select;
 }

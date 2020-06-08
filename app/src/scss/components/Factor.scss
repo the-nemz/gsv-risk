@@ -1,5 +1,14 @@
 .Factor
 {
+  padding-bottom: $gutter-mini*4;
+  color: $blue-light;
+
+  &[hasvalue=false],
+  &[ischanging=true]
+  {
+    color: $white;
+  }
+
   &-label
   {
     display: block;
@@ -10,10 +19,21 @@
   &-prompt
   {
     @include font-sizes(24px, 32px);
-    position: relative;
+    position: absolute;
     text-align: center;
-    bottom: $gutter*2;
+    bottom: 0;
+    width: 100%;
     transition: all $transition-fast;
+  }
+
+  &[hasvalue=true] &-prompt,
+  &[ischanging=true] &-prompt,
+  &-input:focus + &-prompt,
+  &[hasvalue=false] &-label:hover &-prompt
+  {
+    @include font-sizes(16px, 24px);
+    bottom: $gutter*2;
+    padding-top: $gutter/2;
   }
 
   &-input
@@ -30,9 +50,24 @@
     border-bottom: $border-default $blue-light;
     transition: all $transition-fast;
 
+    @include bplte(xs)
+    {
+      width: 80%;
+    }
+
+    &--select
+    {
+      @include Select;
+    }
+
     &:focus
     {
       width: 75%;
+
+      @include bplte(xs)
+      {
+        width: 100%;
+      }
     }
 
     &::-webkit-inner-spin-button
@@ -40,14 +75,5 @@
       appearance: none;
       margin: 0;
     }
-  }
-
-  &-input[hasvalue=true] + &-prompt,
-  &-input:focus + &-prompt,
-  &-label:hover &-input[hasvalue=false] + &-prompt
-  {
-    @include font-sizes(16px, 24px);
-    bottom: $gutter*4;
-    padding-top: $gutter/2;
   }
 }

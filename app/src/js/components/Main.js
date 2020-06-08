@@ -1,5 +1,5 @@
 import React from 'react';
-import { CSSTransitionGroup } from 'react-transition-group'
+import { CSSTransitionGroup } from 'react-transition-group';
 import _ from 'lodash';
 
 import '../polyfill.js';
@@ -16,18 +16,45 @@ export default class Main extends React.Component {
     this.state = {
       factors: [
         {
-          id: 'interactions',
-          prompt: 'How many people will you interact with?',
-          type: 'number',
-          default: 15,
+          id: 'transmission',
+          prompt: 'Which best describes the type of interactions you\'ll have?',
+          type: 'select',
+          options: [
+            {
+              'value': 2,
+              'label': 'Brief outdoor contact',
+              'example': 'Passing by somone on a sidewalk'
+            },
+            {
+              'value': 5,
+              'label': 'Brief indoor contact',
+              'example': 'Slipping by somone in a store aisle'
+            },
+            {
+              'value': 10,
+              'label': 'Brief close contact',
+              'example': 'Sharing a small elevator'
+            },
+            {
+              'value': 25,
+              'label': 'Extended close contact',
+              'example': 'Having dinner with someone'
+            },
+            {
+              'value': 50,
+              'label': 'Significant physical contact',
+              'example': 'Repeated hugging, shoulder to shoulder, etc'
+            }
+          ],
+          default: 5,
           updateDefault: false,
           input: null
         },
         {
-          id: 'transmission',
-          prompt: 'What\'s the chance of transmission with an infected person?',
+          id: 'interactions',
+          prompt: 'How many people will you interact with?',
           type: 'number',
-          default: 10,
+          default: 15,
           updateDefault: false,
           input: null
         },
