@@ -28,8 +28,9 @@
     "node": "8"
   },
   "scripts": {
-    "start": "webpack",
-    "babel": "babel server -d functions/server && babel index.js -d functions",
+    "util": "cp app/src/js/util.js server/js/_util.js",
+    "start": "yarn util && webpack",
+    "babel": "yarn util && babel server -d functions/server && babel index.js -d functions",
     "buildall": "node build.js",
     "serveall": "firebase serve --only functions,hosting"
   }

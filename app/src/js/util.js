@@ -41,6 +41,7 @@ export const INITIAL_FACTORS = [
   {
     id: 'interactions',
     prompt: 'How many people will you interact with?',
+    meta: '[INPUT] interactions',
     type: 'number',
     default: 15,
     updateDefault: false,
@@ -49,6 +50,7 @@ export const INITIAL_FACTORS = [
   {
     id: 'masks',
     prompt: 'What percent of people will be wearing masks?',
+    meta: '[INPUT]% of people wearing masks',
     type: 'number',
     default: 100,
     updateDefault: false,
@@ -57,6 +59,7 @@ export const INITIAL_FACTORS = [
   {
     id: 'infected',
     prompt: 'What percent of people in your area are infected?',
+    meta: '[INPUT]% infected',
     type: 'number',
     default: 1.2,
     updateDefault: true,
@@ -109,4 +112,16 @@ export function getInputFromFactor(factor) {
     return factor.input;
   }
   return null;
+}
+
+export function getGsvText(gsv) {
+  if (gsv === 50) {
+    return `${gsv}+`;
+  } else if (gsv === 0.1) {
+    return `< ${gsv}`;
+  } else if (gsv < 5) {
+    return gsv.toFixed(1);
+  } else {
+    return gsv.toFixed(0);
+  }
 }

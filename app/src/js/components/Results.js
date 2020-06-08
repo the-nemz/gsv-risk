@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { MAX_GSV } from '../util.js';
+import { MAX_GSV, getGsvText } from '../util.js';
 
 const RED_GSV = 25; // GSV value at which point bar color should be fully red
 const RED_HUE = 9;
@@ -29,18 +29,6 @@ export default class Results extends React.Component {
     return Math.log10(Math.min(gsv + 1, maxGsv)) / Math.log10(maxGsv);
   }
 
-  getGsvText(gsv) {
-    if (gsv === 50) {
-      return `${gsv}+`;
-    } else if (gsv === 0.1) {
-      return `< ${gsv}`;
-    } else if (gsv < 5) {
-      return gsv.toFixed(1);
-    } else {
-      return gsv.toFixed(0);
-    }
-  }
-
   render() {
     let gsv = this.props.gsv || this.state.gsv;
     const heightPercent = `${100 * this.calculateLogFraction(gsv)}%`;
@@ -49,7 +37,7 @@ export default class Results extends React.Component {
       <div className="Results">
         <div className="Results-bar" style={{height: heightPercent, backgroundColor: color}}>
           <div className="Results-num">
-            {this.getGsvText(gsv)}
+            {getGsvText(gsv)}
           </div>
         </div>
       </div>
