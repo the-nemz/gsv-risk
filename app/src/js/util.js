@@ -6,7 +6,7 @@ export const INITIAL_FACTORS = [
   {
     id: 'transmission',
     prompt: 'Which best describes the type of interactions you\'ll have?',
-    type: 'select',
+    type: 'number',
     options: [
       {
         'value': 2,
@@ -86,4 +86,27 @@ export function calculateGsv(factors) {
 
   let cleanValue = Math.min(gsv || gsv, MAX_GSV);
   return Math.max(cleanValue, MIN_GSV);
+}
+
+export function getInputFromFactor(factor) {
+  if (factor.type === 'number') {
+    const parsedVal = parseFloat(factor.input);
+    if (parsedVal || parsedVal === 0) {
+      if (factor.options) {
+        for (const option of factor.options) {
+          if (option.value === parsedVal) {
+            return parsedVal;
+          }
+        }
+        return null;
+      } else {
+        return parsedVal;
+      }
+    } else {
+      return null;
+    }
+  } else if (factor.input) {
+    return factor.input;
+  }
+  return null;
 }

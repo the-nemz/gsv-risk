@@ -1,20 +1,35 @@
 import React from 'react';
 import { CSSTransitionGroup } from 'react-transition-group';
 import _ from 'lodash';
+import URI from 'urijs';
 
-import '../polyfill.js';
+import Factor from './Factor.js';
+import Results from './Results.js';
 
-import Factor from './Factor';
-import Results from './Results';
-
-import { INITIAL_FACTORS, calculateGsv } from '../util.js';
+import { INITIAL_FACTORS, calculateGsv, getInputFromFactor } from '../util.js';
 
 export default class Main extends React.Component {
 
   constructor(props) {
     super(props);
+
+    const uri = new URI();
+    const qParams = uri.query(true);
+    let factors = INITIAL_FACTORS;
+
+    for (const factor of factors) {
+      if (uri.hasQuery(factor.id)) {
+        factor.input = qParams[factor.id];
+        factor.input = getInputFromFactor(factor);
+        if (factor.input === null) {
+          uri.removeQuery(factor.id);
+        }
+      }
+    }
+    window.history.replaceState(null, 'GSV Risk', uri.toString());
+
     this.state = {
-      factors: INITIAL_FACTORS
+      factors: factors
     };
   }
 
@@ -22,22 +37,19 @@ export default class Main extends React.Component {
     let factors = _.cloneDeep(this.state.factors);
     for (const curr of factors) {
       if (curr.id === factor.id) {
-        if (factor.type === 'number') {
-          const parsedVal = parseFloat(factor.input);
-          if (parsedVal || parsedVal === 0) {
-            curr.input = parsedVal;
-            if (factor.updateDefault) {
-              curr.default = parsedVal;
-            }
-          } else {
-            curr.input = null;
-          }
-        } else {
-          curr.input = factor.input;
-          if (factor.updateDefault) {
-            curr.default = factor.input;
-          }
+        const input = getInputFromFactor(factor);
+        curr.input = input;
+        if (factor.updateDefault && (input || input === 0)) {
+          curr.default = input;
         }
+
+        let uri = new URI();
+        uri.removeQuery(curr.id);
+        if (curr.input || curr.input === 0) {
+          uri.addQuery(curr.id, encodeURIComponent(curr.input))
+        }
+        window.history.pushState(null, 'GSV Risk', uri.toString());
+
         break;
       }
     }

@@ -57,9 +57,19 @@ export default class Input extends React.Component {
   }
 
   renderSelectContent() {
+    let value = null;
+    if (this.props.factor.input || this.props.factor.input === 0) {
+      for (const option of this.props.factor.options) {
+        if (option.value === this.props.factor.input) {
+          value = option;
+          break;
+        }
+      }
+    }
     return (
       <label className="Factor-label">
-        <Select options={this.props.factor.options} className="Factor-input Factor-input--select" classNamePrefix="Select"
+        <Select className="Factor-input Factor-input--select" classNamePrefix="Select"
+                options={this.props.factor.options} value={value}
                 onMenuOpen={() => this.handleMenuOpen()} onMenuClose={() => this.handleMenuClose()}
                 onChange={(values) => this.handleSelectChange(values)} />
         <div className="Factor-prompt">
@@ -90,7 +100,7 @@ export default class Input extends React.Component {
     const type = this.props.factor.type ? this.props.factor.type : 'text';
     const value = input || input === 0 ? input + '' : '';
 
-    const content = type === 'number' ? this.renderNumberContent(value) : this.renderSelectContent();
+    const content = this.props.factor.options ? this.renderSelectContent() : this.renderNumberContent(value);
     return (
       <div className="Factor" hasvalue={value ? 'true' : 'false'} ischanging={this.state.inputChanging + ''}>
         {content}
