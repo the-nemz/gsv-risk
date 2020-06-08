@@ -37,7 +37,7 @@ exec('cd ./app && yarn && yarn build', {}, (error, stdout, stderr) => {
   console.log('Copying front end build to functions...');
   execSync('cp -R ./app/build/ ./functions/');
 
-  console.log('Inserting meta comment into index.html...');
+  console.log('Inserting HTML comment for meta into index.html...');
   const indexPath = './functions/index.html';
   const builtHtml = fs.readFileSync(indexPath, 'utf8');
   const finalHtml = builtHtml.replace('<head>', '<head><!-- ::META:: -->'); // Add target comment in <head>
@@ -52,7 +52,7 @@ exec('cd ./app && yarn && yarn build', {}, (error, stdout, stderr) => {
 });
 
 console.log('Compiling server code...');
-exec('yarn babel && cd ./app && yarn && yarn build', {}, (error, stdout, stderr) => {
+exec('yarn babel && cd ./functions && yarn', {}, (error, stdout, stderr) => {
   if (error) {
     console.error('stderr:', stderr);
     throw error;
