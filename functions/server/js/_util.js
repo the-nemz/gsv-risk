@@ -6,9 +6,16 @@ Object.defineProperty(exports, "__esModule", {
 exports.calculateGsv = calculateGsv;
 exports.getInputFromFactor = getInputFromFactor;
 exports.getGsvText = getGsvText;
+exports.calculateLogFraction = calculateLogFraction;
+exports.gsvToColor = gsvToColor;
 var MAX_GSV = exports.MAX_GSV = 50;
 var MIN_GSV = exports.MIN_GSV = 0.1;
+
 var MASK_HELP_RATIO = exports.MASK_HELP_RATIO = 0.5;
+
+var RED_GSV = 25; // GSV value at which point bar color should be fully red
+var RED_HUE = 9;
+var GREEN_HUE = 123;
 
 var INITIAL_FACTORS = exports.INITIAL_FACTORS = [{
   id: 'transmission',
@@ -164,4 +171,16 @@ function getGsvText(gsv) {
   } else {
     return gsv.toFixed(0);
   }
+}
+
+function calculateLogFraction(gsv) {
+  var maxGsv = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : MAX_GSV;
+
+  return Math.log10(Math.min(gsv + 1, maxGsv)) / Math.log10(maxGsv);
+}
+
+function gsvToColor(gsv) {
+  var frac = calculateLogFraction(gsv, RED_GSV);
+  var hue = frac * (RED_HUE - GREEN_HUE) + GREEN_HUE;
+  return 'hsl(' + hue + ', 100%, 43%)';
 }
