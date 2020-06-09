@@ -8,50 +8,50 @@ const RED_HUE = 9;
 const GREEN_HUE = 123;
 
 export const INITIAL_FACTORS = [
-  // {
-  //   id: 'transmission',
-  //   prompt: 'Which best describes the type of interactions you\'ll have?',
-  //   type: 'number',
-  //   options: [
-  //     {
-  //       'value': 2,
-  //       'label': 'Brief outdoor contact',
-  //       'example': 'Passing by somone on a sidewalk'
-  //     },
-  //     {
-  //       'value': 5,
-  //       'label': 'Brief indoor contact',
-  //       'example': 'Slipping by somone in a store aisle'
-  //     },
-  //     {
-  //       'value': 10,
-  //       'label': 'Brief close contact',
-  //       'example': 'Sharing a small elevator'
-  //     },
-  //     {
-  //       'value': 25,
-  //       'label': 'Extended close contact',
-  //       'example': 'Having dinner with someone'
-  //     },
-  //     {
-  //       'value': 50,
-  //       'label': 'Significant physical contact',
-  //       'example': 'Repeated hugging, shoulder to shoulder, etc'
-  //     }
-  //   ],
-  //   default: 5,
-  //   updateDefault: false,
-  //   input: null
-  // },
   {
     id: 'transmission',
-    prompt: 'What is the risk of transmission?',
-    meta: '[INPUT]% transmissibility',
+    prompt: 'Which best describes the type of interactions you\'ll have?',
     type: 'number',
+    options: [
+      {
+        'value': 2,
+        'label': 'Brief outdoor contact',
+        'example': 'Passing by somone on a sidewalk'
+      },
+      {
+        'value': 5,
+        'label': 'Brief indoor contact',
+        'example': 'Slipping by somone in a store aisle'
+      },
+      {
+        'value': 10,
+        'label': 'Brief close contact',
+        'example': 'Sharing a small elevator'
+      },
+      {
+        'value': 25,
+        'label': 'Extended close contact',
+        'example': 'Having dinner with someone'
+      },
+      {
+        'value': 50,
+        'label': 'Significant physical contact',
+        'example': 'Repeated hugging, shoulder to shoulder, etc'
+      }
+    ],
     default: 5,
     updateDefault: false,
     input: null
   },
+  // {
+  //   id: 'transmission',
+  //   prompt: 'What is the risk of transmission?',
+  //   meta: '[INPUT]% transmissibility',
+  //   type: 'number',
+  //   default: 5,
+  //   updateDefault: false,
+  //   input: null
+  // },
   {
     id: 'interactions',
     prompt: 'How many people will you interact with?',
