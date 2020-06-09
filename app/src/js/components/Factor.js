@@ -97,7 +97,6 @@ export default class Input extends React.Component {
 
   render() {
     const input = this.state.inputChanging ? this.state.input : this.props.factor.input;
-    const type = this.props.factor.type ? this.props.factor.type : 'text';
     const value = input || input === 0 ? input + '' : '';
 
     const content = this.props.factor.options ? this.renderSelectContent() : this.renderNumberContent(value);

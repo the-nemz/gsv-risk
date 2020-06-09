@@ -6,6 +6,8 @@ import {
   RED_GSV, RED_HUE, GREEN_HUE
 } from '../util.js';
 
+const MAX_LAT = 102;
+
 export default class Results extends React.Component {
 
   constructor(props) {
@@ -30,8 +32,8 @@ export default class Results extends React.Component {
     }
 
     const coronaMaxSizeFromFrac = (frac) => {
-      // Max size is max of 20 * frac and 5
-      return Math.max(Math.round(20 * frac), 5);
+      // Max size is max of 20 * frac and 4 (note: 2 is added after this is called)
+      return Math.max(Math.round(20 * frac), 4);
     }
 
     const gsv = this.props.gsv;
@@ -40,11 +42,19 @@ export default class Results extends React.Component {
 
     _.remove(viruses, (v) => {
       // Remove if lat is beyond the top or if size is too large (because GSV decreased)
-      return v.lat > 100 || v.size > coronaMaxSizeFromFrac(frac) + 1;
+      return v.lat > MAX_LAT || v.size > coronaMaxSizeFromFrac(frac) + 2;
     });
 
     for (const virus of viruses) {
+      if (virus.size === 1) {
+        // All viruses start at size = 1 and grow on first movement
+        virus.size = getRandomInt(coronaMaxSizeFromFrac(frac)) + 2
+      }
       virus.lat += virus.speed;
+      if (virus.lat > MAX_LAT) {
+        // Decrease size when virus passes top of bar
+        virus.size = 0
+      }
       virus.color.h = coronaHSLObjectFromFrac(frac).h
     }
 
@@ -54,7 +64,7 @@ export default class Results extends React.Component {
         color: coronaHSLObjectFromFrac(frac),
         lat: 0,
         lng: getRandomInt(110) - 5, // [-5, 105)% allows virsuses to be slightly outside bar
-        size: getRandomInt(coronaMaxSizeFromFrac(frac)) + 1,
+        size: 1,
         speed: (getRandomInt(12) / 4) + 1.5 // [1.5, 4.5) in 0.25 intervals
       }
       viruses.push(newVirus)
