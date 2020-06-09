@@ -8,14 +8,15 @@ exports.getInputFromFactor = getInputFromFactor;
 exports.getGsvText = getGsvText;
 exports.calculateLogFraction = calculateLogFraction;
 exports.gsvToColor = gsvToColor;
+exports.getRandomInt = getRandomInt;
 var MAX_GSV = exports.MAX_GSV = 50;
 var MIN_GSV = exports.MIN_GSV = 0.1;
 
 var MASK_HELP_RATIO = exports.MASK_HELP_RATIO = 0.5;
 
-var RED_GSV = 25; // GSV value at which point bar color should be fully red
-var RED_HUE = 9;
-var GREEN_HUE = 123;
+var RED_GSV = exports.RED_GSV = 25; // GSV value at which point bar color should be fully red
+var RED_HUE = exports.RED_HUE = 9;
+var GREEN_HUE = exports.GREEN_HUE = 123;
 
 var INITIAL_FACTORS = exports.INITIAL_FACTORS = [{
   id: 'transmission',
@@ -193,4 +194,8 @@ function gsvToColor(gsv) {
   var frac = calculateLogFraction(gsv, RED_GSV);
   var hue = frac * (RED_HUE - GREEN_HUE) + GREEN_HUE;
   return 'hsl(' + hue + ', 100%, 43%)';
+}
+
+function getRandomInt(max) {
+  return Math.floor(Math.random() * Math.floor(max));;
 }
