@@ -94,6 +94,9 @@ export default class Main extends React.Component {
             <Results gsv={calculateGsv(this.state.factors)} />
           </div>
         </div>
+        <footer className="Main-footer l-container">
+          <div className="Main-disclaimer">This is for entertainment purposes only. Pleeeeease continue to follow your local health agency's guidelines.</div>
+        </footer>
       </div>
     );
   }

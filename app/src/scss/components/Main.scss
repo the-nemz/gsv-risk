@@ -56,4 +56,21 @@
     align-items: center;
     justify-content: center;
   }
+
+  &-footer
+  {
+    @include font-sizes(14px, 18px);
+    position: absolute;
+    width: 100%;
+    bottom: 0;
+    color: $blue-light;
+    padding-top: $gutter/4;
+    padding-bottom: $gutter/4;
+    text-align: center;
+
+    @include bplte(xs)
+    {
+      @include font-sizes(12px, 16px);
+    }
+  }
 }
