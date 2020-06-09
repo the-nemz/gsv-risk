@@ -1,10 +1,6 @@
 import React from 'react';
 
-import { MAX_GSV, getGsvText } from '../util.js';
-
-const RED_GSV = 25; // GSV value at which point bar color should be fully red
-const RED_HUE = 9;
-const GREEN_HUE = 123;
+import { getGsvText, calculateLogFraction, gsvToColor } from '../util.js';
 
 export default class Results extends React.Component {
 
@@ -15,24 +11,20 @@ export default class Results extends React.Component {
     };
   }
 
-  fractionToColor(frac) {
-    var hue = (frac * (RED_HUE - GREEN_HUE)) + GREEN_HUE;
-    return `hsl(${hue}, 100%, 43%)`;
-  }
+  // gsvToColor(gsv) {
+  //   let frac = this.calculateLogFraction(gsv, RED_GSV);
+  //   var hue = (frac * (RED_HUE - GREEN_HUE)) + GREEN_HUE;
+  //   return `hsl(${hue}, 100%, 43%)`;
+  // }
 
-  gsvToColor(gsv) {
-    let frac = this.calculateLogFraction(gsv, RED_GSV);
-    return this.fractionToColor(frac)
-  }
-
-  calculateLogFraction(gsv, maxGsv = MAX_GSV) {
-    return Math.log10(Math.min(gsv + 1, maxGsv)) / Math.log10(maxGsv);
-  }
+  // calculateLogFraction(gsv, maxGsv = MAX_GSV) {
+  //   return Math.log10(Math.min(gsv + 1, maxGsv)) / Math.log10(maxGsv);
+  // }
 
   render() {
     let gsv = this.props.gsv || this.state.gsv;
-    const heightPercent = `${100 * this.calculateLogFraction(gsv)}%`;
-    const color = this.gsvToColor(gsv);
+    const heightPercent = `${100 * calculateLogFraction(gsv)}%`;
+    const color = gsvToColor(gsv);
     return (
       <div className="Results">
         <div className="Results-bar" style={{height: heightPercent, backgroundColor: color}}>

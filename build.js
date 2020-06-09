@@ -9,7 +9,7 @@ const ignoreFilesRegexes = [
 ];
 
 console.log('Removing old build directories...');
-execSync('rm -rf ./functions/server ./functions/static ./functions/node_modules');
+execSync('rm -rf ./functions/server ./functions/static ./functions/favicons ./functions/node_modules');
 
 console.log('Removing old build files...');
 const files = glob.sync('functions/**/*', { 'follow': true, 'dot': true });

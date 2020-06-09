@@ -1,6 +1,11 @@
 export const MAX_GSV = 50;
 export const MIN_GSV = 0.1;
+
 export const MASK_HELP_RATIO = 0.5;
+
+const RED_GSV = 25; // GSV value at which point bar color should be fully red
+const RED_HUE = 9;
+const GREEN_HUE = 123;
 
 export const INITIAL_FACTORS = [
   {
@@ -124,4 +129,14 @@ export function getGsvText(gsv) {
   } else {
     return gsv.toFixed(0);
   }
+}
+
+export function calculateLogFraction(gsv, maxGsv = MAX_GSV) {
+  return Math.log10(Math.min(gsv + 1, maxGsv)) / Math.log10(maxGsv);
+}
+
+export function gsvToColor(gsv) {
+  let frac = calculateLogFraction(gsv, RED_GSV);
+  var hue = (frac * (RED_HUE - GREEN_HUE)) + GREEN_HUE;
+  return `hsl(${hue}, 100%, 43%)`;
 }

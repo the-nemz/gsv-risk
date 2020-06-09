@@ -8,6 +8,8 @@ import Results from './Results.js';
 
 import { INITIAL_FACTORS, calculateGsv, getInputFromFactor } from '../util.js';
 
+import logo from '../../assets/gsv-risk.svg';
+
 export default class Main extends React.Component {
 
   constructor(props) {
@@ -75,6 +77,10 @@ export default class Main extends React.Component {
   render() {
     return (
       <div className="Main">
+        <header className="Main-header">
+          <img className="Main-logo" src={logo} alt="GSV Risk" />
+          <h1 className="Main-title">GSV Risk</h1>
+        </header>
         <div className="Main-container l-container">
           <div className="Main-left">
             <CSSTransitionGroup
