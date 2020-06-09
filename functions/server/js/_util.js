@@ -45,7 +45,17 @@ var INITIAL_FACTORS = exports.INITIAL_FACTORS = [{
   default: 5,
   updateDefault: false,
   input: null
-}, {
+},
+// {
+//   id: 'transmission',
+//   prompt: 'What is the risk of transmission?',
+//   meta: '[INPUT]% transmissibility',
+//   type: 'number',
+//   default: 5,
+//   updateDefault: false,
+//   input: null
+// },
+{
   id: 'interactions',
   prompt: 'How many people will you interact with?',
   meta: '[INPUT] interactions',
