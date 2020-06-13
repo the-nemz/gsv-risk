@@ -52,6 +52,7 @@ exec('cd ./app && yarn && yarn build', {}, (error, stdout, stderr) => {
 });
 
 console.log('Compiling server code...');
+console.log('Reminder to ensure that functions/package.json is caught up with ./package.json');
 exec('yarn babel && cd ./functions && yarn', {}, (error, stdout, stderr) => {
   if (error) {
     console.error('stderr:', stderr);

@@ -6,11 +6,11 @@ import express from 'express';
 import fs from 'fs';
 
 import Meta from './server/js/components/Meta.js';
+
 import { INITIAL_FACTORS, getInputFromFactor } from './server/js/_util.js';
 
-const index = fs.readFileSync(__dirname + '/index.html', 'utf8')
-
 const app = express();
+const index = fs.readFileSync(__dirname + '/index.html', 'utf8');
 
 app.get('/', (req, res) => {
   const queryParams = req.query ? req.query : {};
