@@ -85,8 +85,8 @@ export function calculateGsv(factors) {
   let baseFactorValues = {};
   let compareFactorValues = {};
   for (const factor of factors) {
-    baseFactorValues[factor.id] = factor.default;
     compareFactorValues[factor.id] = factor.input || factor.input === 0 ? factor.input : factor.default;
+    baseFactorValues[factor.id] = factor.updateDefault ? compareFactorValues[factor.id] : factor.default;
   }
 
   const resultFromFactorValues = (factorValues) => {
