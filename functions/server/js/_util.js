@@ -93,8 +93,8 @@ function calculateGsv(factors) {
     for (var _iterator = factors[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
       var factor = _step.value;
 
-      baseFactorValues[factor.id] = factor.default;
       compareFactorValues[factor.id] = factor.input || factor.input === 0 ? factor.input : factor.default;
+      baseFactorValues[factor.id] = factor.updateDefault ? compareFactorValues[factor.id] : factor.default;
     }
   } catch (err) {
     _didIteratorError = true;
