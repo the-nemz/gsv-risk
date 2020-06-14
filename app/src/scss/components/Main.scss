@@ -37,11 +37,6 @@
     padding-top: $gutter-mini;
   }
 
-  // &-baseValuesWrap
-  // {
-  //   height: 100%;
-  // }
-
   &-baseValuesButton
   {
     height: 100%;
@@ -52,6 +47,11 @@
     color: $blue-dark;
     transition: background-color $transition-fast;
 
+    @include bplte(xs)
+    {
+      padding: $gutter-mini/2 $gutter;
+    }
+
     @include hoverActive
     {
       background-color: $blue-light;
@@ -61,6 +61,11 @@
   &-baseValuesText
   {
     padding-right: $gutter/2;
+
+    @include bplte(xs)
+    {
+      display: none;
+    }
   }
 
   &-container

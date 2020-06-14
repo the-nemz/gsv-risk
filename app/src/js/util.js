@@ -86,13 +86,6 @@ export const INITIAL_FACTORS = [
   }
 ]
 
-// export const INITIAL_BASEVALUES = {
-//   transmission: 5,
-//   interactions: 15,
-//   masks: 100,
-//   infected: 1.2
-// };
-
 export function calculateGsv(factors) {
   let baseFactorValues = {};
   let compareFactorValues = {};

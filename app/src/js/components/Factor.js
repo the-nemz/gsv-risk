@@ -81,6 +81,8 @@ export default class Input extends React.Component {
   }
 
   renderSelectContent() {
+    // TODO: handle isBase for select params (currently not needed)
+
     let value = null;
     if (this.props.factor.input || this.props.factor.input === 0) {
       for (const option of this.props.factor.options) {

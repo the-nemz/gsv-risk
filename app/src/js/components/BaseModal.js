@@ -3,52 +3,12 @@ import Select from 'react-select';
 
 import Factor from './Factor.js';
 
-import { INITIAL_FACTORS, getInputFromFactor } from '../util.js';
-
-// const BASEVALUES_CONTENT = [
-//   {
-//     id: 'interactions',
-//     prompt: 'How many people do you interact with at the store?',
-//     type: 'number'
-//   },
-//   {
-//     id: 'masks',
-//     prompt: 'What percent of people wear masks at the store?',
-//     type: 'number'
-//   }
-// ]
-
 export default class Input extends React.Component {
 
   constructor(props) {
     super(props);
     this.state = {};
   }
-
-  // handleFactorInputChange(factor) {
-  //   let factors = _.cloneDeep(this.props.factors);
-  //   // let baseValues = _.cloneDeep(this.state.baseValues);
-  //   for (const curr of factors) {
-  //     if (curr.id === factor.id && factor.customizeBase) {
-  //       const baseInput = getInputFromFactor(factor);
-  //       curr.baseValue = baseInput;
-
-  //       // let uri = new URI();
-  //       // uri.removeQuery(curr.id);
-  //       // if (curr.input || curr.input === 0) {
-  //       //   uri.addQuery(curr.id, encodeURIComponent(curr.input))
-  //       // }
-  //       // window.history.pushState(null, 'GSV Risk', uri.toString());
-
-  //       break;
-  //     }
-  //   }
-
-  //   this.setState({
-  //     factors: factors,
-  //     // baseValues: baseValues
-  //   })
-  // }
 
   renderFactors() {
     let factors = [];

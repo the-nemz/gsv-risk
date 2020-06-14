@@ -19,7 +19,6 @@ export default class Main extends React.Component {
     const uri = new URI();
     const qParams = uri.query(true);
     let factors = INITIAL_FACTORS;
-    // let baseValues = INITIAL_BASEVALUES;
 
     for (const factor of factors) {
       if (uri.hasQuery(factor.id)) {
@@ -29,26 +28,24 @@ export default class Main extends React.Component {
           uri.removeQuery(factor.id);
         }
       }
+
+      // TODO: make query params for base values
     }
     window.history.replaceState(null, 'GSV Risk', uri.toString());
 
     this.state = {
       factors: factors,
-      // baseValues: baseValues,
       baseModalOpen: false
     };
   }
 
   handleFactorInputChange(factor) {
     let factors = _.cloneDeep(this.state.factors);
-    // let baseValues = _.cloneDeep(this.state.baseValues);
     for (const curr of factors) {
       if (curr.id === factor.id) {
         const input = getInputFromFactor(factor);
         curr.input = input;
         if (factor.overrideBase && (input || input === 0)) {
-          // curr.default = input; // TODO: update
-          // baseValues[curr.id] = input
           curr.baseValue = input
         }
 
@@ -64,16 +61,12 @@ export default class Main extends React.Component {
     }
 
     this.setState({
-      factors: factors,
-      // baseValues: baseValues
+      factors: factors
     })
   }
 
   handleFactorBaseChange(factor) {
-    console.log(factor);
-
     let factors = _.cloneDeep(this.state.factors);
-    // let baseValues = _.cloneDeep(this.state.baseValues);
     for (const curr of factors) {
       if (curr.id === factor.id && factor.customizeBase) {
         const baseInput = getInputFromFactor(factor, true);
@@ -82,15 +75,7 @@ export default class Main extends React.Component {
           curr.baseValue = baseInput;
         }
 
-        console.log(curr);
-
-        // let uri = new URI();
-        // uri.removeQuery(curr.id);
-        // if (curr.input || curr.input === 0) {
-        //   uri.addQuery(curr.id, encodeURIComponent(curr.input))
-        // }
-        // window.history.pushState(null, 'GSV Risk', uri.toString());
-
+        // TODO: make query params for base values
         break;
       }
     }
@@ -110,7 +95,7 @@ export default class Main extends React.Component {
     let factors = [];
     for (const factor of this.state.factors) {
       factors.push(
-        <Factor factor={factor} key={factor.id} // baseValue={this.state.baseValues[factor.id]}
+        <Factor factor={factor} key={factor.id}
                 onFactorInputChange={(factor) => this.handleFactorInputChange(factor)} />
       );
       if (factor.input === null || factor.input === undefined) {
@@ -120,28 +105,7 @@ export default class Main extends React.Component {
     return factors;
   }
 
-  // renderFadeWrap(content) {
-  //   return (
-  //     <CSSTransitionGroup
-  //         transitionName="FadeAnim"
-  //         transitionAppear={true}
-  //         transitionAppearTimeout={400}
-  //         transitionEnter={true}
-  //         transitionEnterTimeout={400}
-  //         transitionLeave={true}
-  //         transitionLeaveTimeout={400}>
-  //       {content}
-  //     </CSSTransitionGroup>
-  //   );
-  // }
-
   render() {
-    // const baseModal = (
-    //   <Shortcut map={this.state.map} station={this.state.focus.station}
-    //             show={showShortcut} system={system} recent={this.state.recent}
-    //             onAddToLine={(lineKey, station, position) => this.handleAddStationToLine(lineKey, station, position)}
-    //             onDeleteStation={(station) => this.handleStationDelete(station)} />
-    // );
     const baseModal = (
       <BaseModal factors={this.state.factors}
                  onCloseModal={() => this.handleToggleBaseModal()}

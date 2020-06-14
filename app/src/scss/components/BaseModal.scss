@@ -28,6 +28,7 @@
     transform: translateY(-50%);
     background-color: $black-transparent;
     max-height: calc(100% - #{$gutter*2});
+    overflow-y: auto;
     padding: $gutter-mini*2;
     background-color: $blue-dark;
 
@@ -39,9 +40,8 @@
 
     @include bplte(xs)
     {
-      width: 100%;
-      left: 0;
-      top: 0;
+      width: calc(100% - #{$gutter*2});
+      left: $gutter;
     }
   }
 
