@@ -61,6 +61,17 @@ app.get('/', function (req, res) {
       } else {
         factor.input = null;
       }
+
+      var baseParam = 'base' + factor.id;
+      if (factor.customizeBase && baseParam in queryParams) {
+        factor.baseInput = queryParams[baseParam];
+        var bValue = (0, _util.getInputFromFactor)(factor, true);
+        if (bValue !== null) {
+          factor.baseValue = bValue;
+        } else {
+          factor.baseInput = null;
+        }
+      }
     }
   } catch (err) {
     _didIteratorError = true;

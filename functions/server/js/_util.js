@@ -21,6 +21,7 @@ var GREEN_HUE = exports.GREEN_HUE = 123;
 var INITIAL_FACTORS = exports.INITIAL_FACTORS = [{
   id: 'transmission',
   prompt: 'Which best describes the type of interactions you\'ll have?',
+  customizeBase: false,
   type: 'number',
   options: [{
     'value': 2,
@@ -43,42 +44,37 @@ var INITIAL_FACTORS = exports.INITIAL_FACTORS = [{
     'label': 'Significant physical contact',
     'example': 'Repeated hugging, shoulder to shoulder, etc'
   }],
-  default: 5,
-  updateDefault: false,
+  overrideBase: false,
+  baseValue: 5,
   input: null
-},
-// {
-//   id: 'transmission',
-//   prompt: 'What is the risk of transmission?',
-//   meta: '[INPUT]% transmissibility',
-//   type: 'number',
-//   default: 5,
-//   updateDefault: false,
-//   input: null
-// },
-{
+}, {
   id: 'interactions',
   prompt: 'How many people will you interact with?',
+  basePrompt: 'How many people come within 6 feet of you?',
+  customizeBase: true,
   meta: '[INPUT] interactions',
   type: 'number',
-  default: 15,
-  updateDefault: false,
+  overrideBase: false,
+  baseValue: 15,
   input: null
 }, {
   id: 'masks',
   prompt: 'What percent of people will be wearing masks?',
+  basePrompt: 'What percent of people wear masks?',
+  customizeBase: true,
   meta: '[INPUT]% of people wearing masks',
   type: 'number',
-  default: 100,
-  updateDefault: false,
+  overrideBase: false,
+  baseValue: 100,
   input: null
 }, {
   id: 'infected',
   prompt: 'What percent of people in your area are infected?',
+  customizeBase: false,
   meta: '[INPUT]% infected',
   type: 'number',
-  default: 1.2,
-  updateDefault: true,
+  overrideBase: true,
+  baseValue: 1.2,
   input: null
 }];
 
@@ -93,8 +89,8 @@ function calculateGsv(factors) {
     for (var _iterator = factors[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
       var factor = _step.value;
 
-      compareFactorValues[factor.id] = factor.input || factor.input === 0 ? factor.input : factor.default;
-      baseFactorValues[factor.id] = factor.updateDefault ? compareFactorValues[factor.id] : factor.default;
+      compareFactorValues[factor.id] = factor.input || factor.input === 0 ? factor.input : factor.baseValue;
+      baseFactorValues[factor.id] = factor.overrideBase ? compareFactorValues[factor.id] : factor.baseValue;
     }
   } catch (err) {
     _didIteratorError = true;
@@ -128,8 +124,11 @@ function calculateGsv(factors) {
 }
 
 function getInputFromFactor(factor) {
+  var isBase = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
+
+  var input = isBase ? factor.baseInput : factor.input;
   if (factor.type === 'number') {
-    var parsedVal = parseFloat(factor.input);
+    var parsedVal = parseFloat(input);
     if (parsedVal || parsedVal === 0) {
       if (factor.options) {
         var _iteratorNormalCompletion2 = true;
@@ -166,8 +165,8 @@ function getInputFromFactor(factor) {
     } else {
       return null;
     }
-  } else if (factor.input) {
-    return factor.input;
+  } else if (input) {
+    return input;
   }
   return null;
 }
