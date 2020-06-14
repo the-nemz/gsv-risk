@@ -105,6 +105,20 @@ export default class Main extends React.Component {
     return factors;
   }
 
+  renderFadeWrap(content) {
+    return (
+      <CSSTransitionGroup transitionName="FadeAnim"
+                          transitionAppear={true}
+                          transitionAppearTimeout={400}
+                          transitionEnter={true}
+                          transitionEnterTimeout={400}
+                          transitionLeave={true}
+                          transitionLeaveTimeout={400}>
+        {content}
+      </CSSTransitionGroup>
+    );
+  }
+
   render() {
     const baseModal = (
       <BaseModal factors={this.state.factors}
@@ -119,26 +133,26 @@ export default class Main extends React.Component {
             <img className="Main-logo" src={logo} alt="GSV Risk" />
             <h1 className="Main-title">GSV Risk</h1>
           </div>
+
           <button className="Main-baseValuesButton"
                   onClick={() => this.handleToggleBaseModal()}>
             <div className="Main-baseValuesText">Update base visit</div>
             <i className="fas fa-sliders-h"></i>
           </button>
         </header>
+
         <div className="Main-container l-container">
           <div className="Main-left">
-            <CSSTransitionGroup
-              transitionName="example"
-              transitionEnterTimeout={500}
-              transitionLeaveTimeout={300}>
-              {this.renderFactors()}
-            </CSSTransitionGroup>
+            {this.renderFadeWrap(this.renderFactors())}
           </div>
+
           <div className="Main-right">
             <Results gsv={calculateGsv(this.state.factors)} />
           </div>
         </div>
-        {this.state.baseModalOpen ? baseModal : ''}
+
+        {this.renderFadeWrap(this.state.baseModalOpen ? baseModal : '')}
+
         <footer className="Main-footer l-container">
           <div className="Main-disclaimer">This is for entertainment purposes only. Pleeeeease continue to follow your local health agency's guidelines.</div>
         </footer>

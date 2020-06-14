@@ -1,17 +1,37 @@
-.example-enter {
-  opacity: 0.01;
-}
+.FadeAnim
+{
+  transition: opacity $transition-slow;
 
-.example-enter.example-enter-active {
-  opacity: 1;
-  transition: opacity 500ms ease-in;
-}
+  &-appear
+  {
+    opacity: 0.01;
+  }
 
-.example-leave {
-  opacity: 1;
-}
+  &-appear-active
+  {
+    opacity: 1;
+    transition: opacity $transition-slow;
+  }
 
-.example-leave.example-leave-active {
-  opacity: 0.01;
-  transition: opacity 300ms ease-in;
+  &-enter
+  {
+    opacity: 0.01;
+  }
+
+  &-enter-active
+  {
+    opacity: 1;
+    transition: opacity $transition-slow;
+  }
+
+  &-leave
+  {
+    opacity: 1;
+  }
+
+  &-leave-active
+  {
+    opacity: 0.01;
+    transition: opacity $transition-slow;
+  }
 }
