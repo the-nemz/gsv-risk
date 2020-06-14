@@ -33,7 +33,7 @@ export default class Main extends React.Component {
       const baseParam = 'base' + factor.id;
       if (factor.customizeBase && uri.hasQuery(baseParam)) {
         factor.baseInput = qParams[baseParam];
-        const bValue = getInputFromFactor(factor);
+        const bValue = getInputFromFactor(factor, true);
         if (bValue === null) {
           uri.removeQuery(baseParam);
           factor.baseInput = null;
@@ -83,6 +83,7 @@ export default class Main extends React.Component {
         const baseInput = getInputFromFactor(factor, true);
         let uri = new URI();
         const baseParam = 'base' + factor.id;
+        uri.removeQuery(baseParam);
         if (baseInput || baseInput === 0) {
           curr.baseValue = baseInput;
           uri.addQuery(baseParam, encodeURIComponent(baseInput));

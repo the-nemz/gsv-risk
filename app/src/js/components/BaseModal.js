@@ -33,8 +33,13 @@ export default class Input extends React.Component {
             {this.renderFactors()}
           </div>
         </div>
+
         <button className="BaseModal-close"
-                onClick={() => this.props.onCloseModal()} />
+                onClick={() => this.props.onCloseModal()}>
+          <div className="BaseModal-closeIcon">
+            <i class="fas fa-times-circle"></i>
+          </div>
+        </button>
       </div>
     );
   }

@@ -45,6 +45,14 @@
     }
   }
 
+  &-closeIcon
+  {
+    position: absolute;
+    top: $gutter;
+    right: $gutter;
+    font-size: $gutter-mini*2;
+  }
+
   &-close
   {
     position: absolute;
