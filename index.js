@@ -27,6 +27,17 @@ app.get('/', (req, res) => {
     } else {
       factor.input = null;
     }
+
+    const baseParam = 'base' + factor.id;
+    if (factor.customizeBase && baseParam in queryParams) {
+      factor.baseInput = queryParams[baseParam];
+      const bValue = getInputFromFactor(factor, true);
+      if (bValue !== null) {
+        factor.baseValue = bValue;
+      } else {
+        factor.baseInput = null;
+      }
+    }
   }
 
   renderToString(<Meta factors={factors} useDefaults={!hasValidQuery} />);
