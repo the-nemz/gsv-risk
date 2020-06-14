@@ -2,6 +2,7 @@ import React from 'react';
 import { CSSTransitionGroup } from 'react-transition-group';
 import _ from 'lodash';
 import URI from 'urijs';
+import 'focus-visible/dist/focus-visible.min.js';
 
 import BaseModal from './BaseModal.js';
 import Factor from './Factor.js';
@@ -29,7 +30,17 @@ export default class Main extends React.Component {
         }
       }
 
-      // TODO: make query params for base values
+      const baseParam = 'base' + factor.id;
+      if (factor.customizeBase && uri.hasQuery(baseParam)) {
+        factor.baseInput = qParams[baseParam];
+        const bValue = getInputFromFactor(factor);
+        if (bValue === null) {
+          uri.removeQuery(baseParam);
+          factor.baseInput = null;
+        } else {
+          factor.baseValue = bValue;
+        }
+      }
     }
     window.history.replaceState(null, 'GSV Risk', uri.toString());
 
@@ -52,7 +63,7 @@ export default class Main extends React.Component {
         let uri = new URI();
         uri.removeQuery(curr.id);
         if (curr.input || curr.input === 0) {
-          uri.addQuery(curr.id, encodeURIComponent(curr.input))
+          uri.addQuery(curr.id, encodeURIComponent(curr.input));
         }
         window.history.pushState(null, 'GSV Risk', uri.toString());
 
@@ -70,12 +81,14 @@ export default class Main extends React.Component {
     for (const curr of factors) {
       if (curr.id === factor.id && factor.customizeBase) {
         const baseInput = getInputFromFactor(factor, true);
-        console.log(baseInput, typeof baseInput);
+        let uri = new URI();
+        const baseParam = 'base' + factor.id;
         if (baseInput || baseInput === 0) {
           curr.baseValue = baseInput;
+          uri.addQuery(baseParam, encodeURIComponent(baseInput));
         }
+        window.history.pushState(null, 'GSV Risk', uri.toString());
 
-        // TODO: make query params for base values
         break;
       }
     }
