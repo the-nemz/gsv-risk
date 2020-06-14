@@ -81,17 +81,18 @@ export default class Input extends React.Component {
   }
 
   renderSelectContent() {
-    // TODO: handle isBase for select params (currently not needed)
-
+    const inputValue = this.props.isBase ? (this.props.factor.baseInput || this.props.factor.baseValue) : this.props.factor.input;
     let value = null;
-    if (this.props.factor.input || this.props.factor.input === 0) {
+
+    if (inputValue || inputValue === 0) {
       for (const option of this.props.factor.options) {
-        if (option.value === this.props.factor.input) {
+        if (option.value === inputValue) {
           value = option;
           break;
         }
       }
     }
+
     return (
       <label className="Factor-label">
         <Select className="Factor-input Factor-input--select" classNamePrefix="Select"

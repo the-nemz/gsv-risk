@@ -44,14 +44,6 @@ export const INITIAL_FACTORS = [
     baseValue: 5,
     input: null
   },
-  // {
-  //   id: 'transmission',
-  //   prompt: 'What is the risk of transmission?',
-  //   meta: '[INPUT]% transmissibility',
-  //   type: 'number',
-  //   overrideBase: false,
-  //   input: null
-  // },
   {
     id: 'interactions',
     prompt: 'How many people will you interact with?',

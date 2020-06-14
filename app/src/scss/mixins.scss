@@ -122,6 +122,7 @@
     text-align: center;
     background-color: $blue-dark;
     padding: $gutter/4 $gutter-mini;
+    transition: background-color $transition-fast;
 
     &:hover
     {

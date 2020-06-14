@@ -149,7 +149,7 @@ export default class Main extends React.Component {
 
           <button className="Main-baseValuesButton"
                   onClick={() => this.handleToggleBaseModal()}>
-            <div className="Main-baseValuesText">Update base visit</div>
+            <div className="Main-baseValuesText">Customize base visit</div>
             <i className="fas fa-sliders-h"></i>
           </button>
         </header>
