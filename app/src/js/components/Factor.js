@@ -10,6 +10,13 @@ export default class Input extends React.Component {
     };
   }
 
+  handleInputFocus(value) {
+    this.setState({
+      input: value,
+      inputChanging: true
+    });
+  }
+
   handleTextChange(value) {
     this.setState({
       input: value,
@@ -25,7 +32,12 @@ export default class Input extends React.Component {
 
   handleTextBlur(value) {
     let factor = this.props.factor;
-    factor.input = value || value === 0 ? value : null;
+    let finalValue = value || value === 0 ? value : null;
+    if (this.props.isBase) {
+      factor.baseInput = finalValue;
+    } else {
+      factor.input = finalValue;
+    }
     this.props.onFactorInputChange(factor);
     this.setState({
       input: '',
@@ -35,7 +47,11 @@ export default class Input extends React.Component {
 
   handleSelectChange(value) {
     let factor = this.props.factor;
-    factor.input = value.value;
+    if (this.props.isBase) {
+      factor.baseInput = value.value;
+    } else {
+      factor.input = value.value;
+    }
     this.props.onFactorInputChange(factor);
     this.setState({
       input: '',
@@ -56,6 +72,14 @@ export default class Input extends React.Component {
     });
   }
 
+  renderPrompt() {
+    return (
+      <div className="Factor-prompt">
+        {this.props.isBase ? this.props.factor.basePrompt : this.props.factor.prompt}
+      </div>
+    );
+  }
+
   renderSelectContent() {
     let value = null;
     if (this.props.factor.input || this.props.factor.input === 0) {
@@ -72,9 +96,7 @@ export default class Input extends React.Component {
                 options={this.props.factor.options} value={value}
                 onMenuOpen={() => this.handleMenuOpen()} onMenuClose={() => this.handleMenuClose()}
                 onChange={(values) => this.handleSelectChange(values)} />
-        <div className="Factor-prompt">
-          {this.props.factor.prompt}
-        </div>
+        {this.renderPrompt()}
       </label>
     )
   }
@@ -84,20 +106,24 @@ export default class Input extends React.Component {
       <label className="Factor-label">
         <input className={`Factor-input Factor-input--number`}
               type="number" value={value}
+              onFocus={(e) => this.handleTextChange(e.target.value)}
               onChange={(e) => this.handleTextChange(e.target.value)}
               onKeyPress={(e) => this.handleKeyPress(e, value)}
               onBlur={(e) => this.handleTextBlur(e.target.value)}>
         </input>
-        <div className="Factor-prompt">
-          {this.props.factor.prompt}
-        </div>
+        {this.renderPrompt()}
       </label>
     )
   }
 
   render() {
     const input = this.state.inputChanging ? this.state.input : this.props.factor.input;
-    const value = input || input === 0 ? input + '' : '';
+    const inputValue = input || input === 0 ? input + '' : '';
+
+    const baseInput = this.state.inputChanging ? this.state.input : this.props.factor.baseInput;
+    const baseValue = baseInput || baseInput === 0 ? baseInput + '' : (this.state.inputChanging ? '' : this.props.factor.baseValue + '');
+
+    const value = this.props.isBase ? baseValue : inputValue;
 
     const content = this.props.factor.options ? this.renderSelectContent() : this.renderNumberContent(value);
     return (

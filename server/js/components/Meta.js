@@ -65,7 +65,7 @@ export default class Meta extends React.Component {
     let logo = DEFAULT_LOGO;
 
     if (!this.props.useDefaults) {
-      let gsv = calculateGsv(this.props.factors);
+      let gsv = calculateGsv(this.props.factors); // TODO: pass possible non default baseValues
       title = `GSV Risk | ${getGsvText(gsv)} grocery store visits!`;
       description = this.getDescription(this.props.factors, gsv);
       logo = LOGO_WITH_COMMENTS.replace('<!-- ::GSV:: -->', getGsvText(gsv)).replace('<!-- ::COLOR:: -->', `fill="${gsvToColor(gsv)}"`);

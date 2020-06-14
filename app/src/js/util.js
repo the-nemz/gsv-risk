@@ -11,6 +11,7 @@ export const INITIAL_FACTORS = [
   {
     id: 'transmission',
     prompt: 'Which best describes the type of interactions you\'ll have?',
+    customizeBase: false,
     type: 'number',
     options: [
       {
@@ -39,8 +40,8 @@ export const INITIAL_FACTORS = [
         'example': 'Repeated hugging, shoulder to shoulder, etc'
       }
     ],
-    default: 5,
-    updateDefault: false,
+    overrideBase: false,
+    baseValue: 5,
     input: null
   },
   // {
@@ -48,45 +49,56 @@ export const INITIAL_FACTORS = [
   //   prompt: 'What is the risk of transmission?',
   //   meta: '[INPUT]% transmissibility',
   //   type: 'number',
-  //   default: 5,
-  //   updateDefault: false,
+  //   overrideBase: false,
   //   input: null
   // },
   {
     id: 'interactions',
     prompt: 'How many people will you interact with?',
+    basePrompt: 'How many people come within 6 feet of you?',
+    customizeBase: true,
     meta: '[INPUT] interactions',
     type: 'number',
-    default: 15,
-    updateDefault: false,
+    overrideBase: false,
+    baseValue: 15,
     input: null
   },
   {
     id: 'masks',
     prompt: 'What percent of people will be wearing masks?',
+    basePrompt: 'What percent of people wear masks?',
+    customizeBase: true,
     meta: '[INPUT]% of people wearing masks',
     type: 'number',
-    default: 100,
-    updateDefault: false,
+    overrideBase: false,
+    baseValue: 100,
     input: null
   },
   {
     id: 'infected',
     prompt: 'What percent of people in your area are infected?',
+    customizeBase: false,
     meta: '[INPUT]% infected',
     type: 'number',
-    default: 1.2,
-    updateDefault: true,
+    overrideBase: true,
+    baseValue: 1.2,
     input: null
   }
 ]
+
+// export const INITIAL_BASEVALUES = {
+//   transmission: 5,
+//   interactions: 15,
+//   masks: 100,
+//   infected: 1.2
+// };
 
 export function calculateGsv(factors) {
   let baseFactorValues = {};
   let compareFactorValues = {};
   for (const factor of factors) {
-    compareFactorValues[factor.id] = factor.input || factor.input === 0 ? factor.input : factor.default;
-    baseFactorValues[factor.id] = factor.updateDefault ? compareFactorValues[factor.id] : factor.default;
+    compareFactorValues[factor.id] = factor.input || factor.input === 0 ? factor.input : factor.baseValue;
+    baseFactorValues[factor.id] = factor.overrideBase ? compareFactorValues[factor.id] : factor.baseValue;
   }
 
   const resultFromFactorValues = (factorValues) => {
@@ -105,9 +117,10 @@ export function calculateGsv(factors) {
   return Math.max(cleanValue, MIN_GSV);
 }
 
-export function getInputFromFactor(factor) {
+export function getInputFromFactor(factor, isBase = false) {
+  const input = isBase ? factor.baseInput : factor.input;
   if (factor.type === 'number') {
-    const parsedVal = parseFloat(factor.input);
+    const parsedVal = parseFloat(input);
     if (parsedVal || parsedVal === 0) {
       if (factor.options) {
         for (const option of factor.options) {
@@ -122,8 +135,8 @@ export function getInputFromFactor(factor) {
     } else {
       return null;
     }
-  } else if (factor.input) {
-    return factor.input;
+  } else if (input) {
+    return input;
   }
   return null;
 }

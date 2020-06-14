@@ -1,12 +1,33 @@
 .Factor
 {
-  padding-bottom: $gutter-mini*4;
   color: $blue-light;
+
+  &:not(:last-child)
+  {
+    padding-bottom: $gutter-mini*4;
+  }
 
   &[hasvalue=false],
   &[ischanging=true]
   {
     color: $white;
+
+    .Factor-input
+    {
+      border-color: $white;
+    }
+  }
+
+  &[hasvalue=true],
+  &[ischanging=true],
+  &[hasvalue=false] &-label:hover
+  {
+    .Factor-prompt
+    {
+      @include font-sizes(16px, 24px);
+      bottom: $gutter*2;
+      padding-top: $gutter/2;
+    }
   }
 
   &-label
@@ -24,16 +45,6 @@
     bottom: 0;
     width: 100%;
     transition: all $transition-fast;
-  }
-
-  &[hasvalue=true] &-prompt,
-  &[ischanging=true] &-prompt,
-  &-input:focus + &-prompt,
-  &[hasvalue=false] &-label:hover &-prompt
-  {
-    @include font-sizes(16px, 24px);
-    bottom: $gutter*2;
-    padding-top: $gutter/2;
   }
 
   &-input

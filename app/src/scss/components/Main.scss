@@ -10,9 +10,18 @@
   {
     position: absolute;
     height: $gutter*3;
+    width: calc(100% - #{$gutter*2});
     top: $gutter;
     left: $gutter;
     color: $blue-light;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  &-titleLogo
+  {
+    height: 100%;
     display: flex;
     align-items: center;
   }
@@ -26,6 +35,32 @@
   {
     padding-left: $gutter/2;
     padding-top: $gutter-mini;
+  }
+
+  // &-baseValuesWrap
+  // {
+  //   height: 100%;
+  // }
+
+  &-baseValuesButton
+  {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    padding: $gutter/2 $gutter-mini;
+    background-color: $white;
+    color: $blue-dark;
+    transition: background-color $transition-fast;
+
+    @include hoverActive
+    {
+      background-color: $blue-light;
+    }
+  }
+
+  &-baseValuesText
+  {
+    padding-right: $gutter/2;
   }
 
   &-container
