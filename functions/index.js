@@ -35,9 +35,8 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
-var index = _fs2.default.readFileSync(__dirname + '/index.html', 'utf8');
-
 var app = (0, _express2.default)();
+var index = _fs2.default.readFileSync(__dirname + '/index.html', 'utf8');
 
 app.get('/', function (req, res) {
   var queryParams = req.query ? req.query : {};
@@ -88,7 +87,9 @@ app.get('/', function (req, res) {
     }
   }
 
-  (0, _server.renderToString)(_react2.default.createElement(_Meta2.default, { factors: factors, useDefaults: !hasValidQuery }));
+  var hostName = req.headers['x-forwarded-host'] || req.headers['host'] || req.host;
+  var protocol = hostName.includes('localhost') ? 'http' : 'https';
+  (0, _server.renderToString)(_react2.default.createElement(_Meta2.default, { factors: factors, useDefaults: !hasValidQuery, host: protocol + '://' + hostName }));
   var helmet = _reactHelmet.Helmet.renderStatic();
 
   var finalHtml = index.replace('<!-- ::META:: -->', helmet.title.toString() + helmet.meta.toString());
