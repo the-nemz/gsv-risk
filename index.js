@@ -40,7 +40,9 @@ app.get('/', (req, res) => {
     }
   }
 
-  renderToString(<Meta factors={factors} useDefaults={!hasValidQuery} />);
+  const hostName = req.headers['x-forwarded-host'] || req.headers['host'] || req.host;
+  const protocol = hostName.includes('localhost') ? 'http' : 'https';
+  renderToString(<Meta factors={factors} useDefaults={!hasValidQuery} host={`${protocol}://${hostName}`} />);
   const helmet = Helmet.renderStatic();
 
   const finalHtml = index.replace('<!-- ::META:: -->', helmet.title.toString() + helmet.meta.toString());

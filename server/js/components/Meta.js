@@ -3,8 +3,6 @@ import { Helmet } from 'react-helmet';
 
 import { calculateGsv, getGsvText } from '../_util.js';
 
-const BASE_URL = './';
-
 export default class Meta extends React.Component {
 
   constructor(props) {
@@ -42,7 +40,7 @@ export default class Meta extends React.Component {
   render() {
     let title = 'Grocery Store Visits | Calculate COVID-19 risk in terms we all know - going to the grocery store.';
     let description = 'GSV Risk is a web application that allows you to approximate an event\'s COVID-19 risk in units we all know - grocery store visits.';
-    let logoPath = `${BASE_URL}images/default.svg`;
+    let logoPath = `${this.props.host}/images/default.svg`;
 
     if (!this.props.useDefaults) {
       let gsv = calculateGsv(this.props.factors);
@@ -50,9 +48,9 @@ export default class Meta extends React.Component {
       description = this.getDescription(this.props.factors, gsv);
 
       if (gsv < 4.95) {
-        logoPath = `${BASE_URL}images/${gsv.toFixed(1)}.svg`;
+        logoPath = `${this.props.host}/images/${gsv.toFixed(1)}.svg`;
       } else {
-        logoPath = `${BASE_URL}images/${gsv.toFixed(0)}.svg`;
+        logoPath = `${this.props.host}/images/${gsv.toFixed(0)}.svg`;
       }
     }
 
