@@ -131,7 +131,7 @@ export function getGsvText(gsv) {
     return `${gsv}+`;
   } else if (gsv === 0.1) {
     return `< ${gsv}`;
-  } else if (gsv < 5) {
+  } else if (gsv < 4.95) {
     return gsv.toFixed(1);
   } else {
     return gsv.toFixed(0);
