@@ -41,11 +41,15 @@ export default class Meta extends React.Component {
     let title = 'Grocery Store Visits | Calculate COVID-19 risk in terms we all know - going to the grocery store.';
     let description = 'GSV Risk is a web application that allows you to approximate an event\'s COVID-19 risk in units we all know - grocery store visits.';
     let logoPath = `${this.props.host}/images/default.png`;
+    let logoSize = '600';
+    let logoAlt = 'GSV Risk logo';
 
     if (!this.props.useDefaults) {
       let gsv = calculateGsv(this.props.factors);
       title = `GSV Risk | ${getGsvText(gsv)} grocery store visits!`;
       description = this.getDescription(this.props.factors, gsv);
+      logoSize = '750';
+      logoAlt = `GSV Risk logo with number ${getGsvText(gsv)}`;
 
       if (gsv < 4.95) {
         logoPath = `${this.props.host}/images/${gsv.toFixed(1)}.png`;
@@ -59,11 +63,11 @@ export default class Meta extends React.Component {
         title={title}
         meta={[
           {
-            name: 'og:site_name',
+            property: 'og:site_name',
             content: 'GSV Risk'
           },
           {
-            name: 'og:title',
+            property: 'og:title',
             content: title
           },
           {
@@ -71,12 +75,36 @@ export default class Meta extends React.Component {
             content: description
           },
           {
-            name: 'og:description',
+            property: 'og:description',
             content: description
           },
           {
-            name: 'og:image:secure_url',
+            property: 'og:image',
             content: logoPath
+          },
+          {
+            property: 'og:image:url',
+            content: logoPath
+          },
+          {
+            property: 'og:image:secure_url',
+            content: logoPath
+          },
+          {
+            property: 'og:image:width',
+            content: logoSize
+          },
+          {
+            property: 'og:image:height',
+            content: logoSize
+          },
+          {
+            property: 'og:image:type',
+            content: 'image/png'
+          },
+          {
+            property: 'og:image:alt',
+            content: logoAlt
           }
         ]}
       />
