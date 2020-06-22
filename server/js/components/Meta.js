@@ -75,7 +75,7 @@ export default class Meta extends React.Component {
             content: description
           },
           {
-            name: 'og:image',
+            name: 'og:image:secure_url',
             content: logoPath
           }
         ]}
