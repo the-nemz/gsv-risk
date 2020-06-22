@@ -136,7 +136,7 @@ var Meta = function (_React$Component) {
           name: 'og:description',
           content: description
         }, {
-          name: 'og:image',
+          name: 'og:image:secure_url',
           content: logoPath
         }]
       });
