@@ -107,7 +107,7 @@ var Meta = function (_React$Component) {
     value: function render() {
       var title = 'Grocery Store Visits | Calculate COVID-19 risk in terms we all know - going to the grocery store.';
       var description = 'GSV Risk is a web application that allows you to approximate an event\'s COVID-19 risk in units we all know - grocery store visits.';
-      var logoPath = this.props.host + '/images/default.svg';
+      var logoPath = this.props.host + '/images/default.png';
 
       if (!this.props.useDefaults) {
         var gsv = (0, _util.calculateGsv)(this.props.factors);
@@ -115,9 +115,9 @@ var Meta = function (_React$Component) {
         description = this.getDescription(this.props.factors, gsv);
 
         if (gsv < 4.95) {
-          logoPath = this.props.host + '/images/' + gsv.toFixed(1) + '.svg';
+          logoPath = this.props.host + '/images/' + gsv.toFixed(1) + '.png';
         } else {
-          logoPath = this.props.host + '/images/' + gsv.toFixed(0) + '.svg';
+          logoPath = this.props.host + '/images/' + gsv.toFixed(0) + '.png';
         }
       }
 
