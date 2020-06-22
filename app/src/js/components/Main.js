@@ -168,7 +168,16 @@ export default class Main extends React.Component {
         {this.renderFadeWrap(this.state.baseModalOpen ? baseModal : '')}
 
         <footer className="Main-footer l-container">
-          <div className="Main-disclaimer">This is for entertainment purposes only. Pleeeeease continue to follow your local health agency's guidelines.</div>
+          <div className="Main-disclaimer">
+            This is for entertainment purposes only. Pleeeeease continue to follow your local health agency's guidelines.
+          </div>
+          <div className="Main-copy">
+            © 2020 GSV Risk |&nbsp;
+            <a className="Main-privacy Link" href="privacypolicy.html"
+              target="_blank" rel="nofollow noopener noreferrer">
+              Privacy Policy
+            </a>
+          </div>
         </footer>
       </div>
     );
