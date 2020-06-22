@@ -42,6 +42,16 @@
   </head>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
+    <script>
+      window.fbAsyncInit = function() {
+        window.FB = FB;
+        window.FB.init({
+          appId: '3162061603847510',
+          xfbml: true,
+          version: 'v3.3'
+        });
+      };
+    </script>
     <div id="root"></div>
     <!--
       This HTML file is a template.
