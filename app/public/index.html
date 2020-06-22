@@ -48,10 +48,12 @@
         window.FB.init({
           appId: '3162061603847510',
           xfbml: true,
-          version: 'v3.3'
+          version: 'v7.0'
         });
+        window.FB.AppEvents.logPageView();
       };
     </script>
+    <script async defer src="https://connect.facebook.net/en_US/sdk.js"></script>
     <div id="root"></div>
     <!--
       This HTML file is a template.
