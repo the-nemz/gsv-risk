@@ -127,33 +127,35 @@ const styles = StyleSheet.create({
     flex: 1,
     display: 'flex',
     flexDirection: 'row',
-    color: VARIABLES.WHITE,
     backgroundColor: VARIABLES.BLUE_DARK,
     alignItems: 'center',
     justifyContent: 'center',
   },
 
-  // label: {
-  //   position: 'relative',
-  //   // padding-top: $gutter-mini*2;
-  // },
+  label: {
+    color: VARIABLES.WHITE,
+    // position: 'relative',
+    // padding-top: $gutter-mini*2;
+  },
 
-  // prompt: {
-  //   position: 'absolute',
-  //   textAlign: 'center',
-  //   bottom: 0,
-  //   width: '100%',
-  //   // transition: all $transition-fast;
-  // },
+  prompt: {
+    color: VARIABLES.WHITE,
+    // position: 'absolute',
+    textAlign: 'center',
+    // bottom: 0,
+    width: '100%',
+    // transition: all $transition-fast;
+  },
 
-  // input: {
-  //   width: '50%',
-  //   marginLeft: 'auto',
-  //   marginRight: 'auto',
-  //   textAlign: 'center',
-  //   // backgroundColor: 'transparent';
-  //   // outline: 0;
-  //   // border-bottom: $border-default $blue-light;
-  //   // transition: all $transition-fast;
-  // }
+  input: {
+    color: VARIABLES.WHITE,
+    width: '50%',
+    marginLeft: 'auto',
+    marginRight: 'auto',
+    textAlign: 'center',
+    // backgroundColor: 'transparent';
+    // outline: 0;
+    // border-bottom: $border-default $blue-light;
+    // transition: all $transition-fast;
+  }
 });

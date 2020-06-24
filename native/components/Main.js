@@ -83,7 +83,7 @@ export default class Main extends React.Component {
         </View>
 
         <View style={styles.right}>
-          <Text>
+          <Text style={styles.gsv}>
             {calculateGsv(this.state.factors)}
           </Text>
         </View>
@@ -97,7 +97,6 @@ const styles = StyleSheet.create({
     flex: 1,
     display: 'flex',
     flexDirection: 'row',
-    color: VARIABLES.WHITE,
     backgroundColor: VARIABLES.BLUE_DARK,
     alignItems: 'center',
     justifyContent: 'center'
@@ -116,5 +115,9 @@ const styles = StyleSheet.create({
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center'
+  },
+
+  gsv: {
+    color: VARIABLES.WHITE
   }
 });
