@@ -1,8 +1,9 @@
 import React from 'react';
-import { StyleSheet, Text, TouchableOpacity, View, Image } from 'react-native';
+import { Keyboard, TouchableWithoutFeedback, StyleSheet, Text, TouchableOpacity, View, Image } from 'react-native';
 import _ from 'lodash';
 
 import Factor from './Factor.js';
+import Results from './Results.js';
 
 import { INITIAL_FACTORS, calculateGsv, getInputFromFactor } from '../util.js';
 import { VARIABLES } from '../style/variables.js';
@@ -77,17 +78,20 @@ export default class Main extends React.Component {
 
   render() {
     return (
-      <View style={styles.container}>
-        <View style={styles.left}>
-          {this.renderFactors()}
-        </View>
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+        <View style={styles.container}>
+          <View style={styles.left}>
+            {this.renderFactors()}
+          </View>
 
-        <View style={styles.right}>
-          <Text style={styles.gsv}>
-            {calculateGsv(this.state.factors)}
-          </Text>
+          <View style={styles.right}>
+            {/* <Text style={styles.gsv}>
+              {calculateGsv(this.state.factors)}
+            </Text> */}
+            <Results gsv={calculateGsv(this.state.factors)} />
+          </View>
         </View>
-      </View>
+      </TouchableWithoutFeedback>
     );
   }
 }
@@ -99,7 +103,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     backgroundColor: VARIABLES.BLUE_DARK,
     alignItems: 'center',
-    justifyContent: 'center'
+    justifyContent: 'center',
+    padding: VARIABLES.GUTTER_MINI
   },
 
   left: {
@@ -112,6 +117,7 @@ const styles = StyleSheet.create({
 
   right: {
     flex: 1,
+    height: '100%',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center'

@@ -1,5 +1,8 @@
 
 export const VARIABLES = {
+  GUTTER: 16,
+  GUTTER_MINI: 12,
+
   BLACK: '#000',
   WHITE: '#fff',
   BLACK_TRANSPARENT: 'rgba(0, 0, 0, 0.55)',

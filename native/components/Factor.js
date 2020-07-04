@@ -1,5 +1,7 @@
 import React from 'react';
-import { StyleSheet, Keyboard, View, Text, TextInput } from 'react-native';
+import { StyleSheet, Keyboard, View, Text, TextInput, TouchableWithoutFeedback } from 'react-native';
+import { Sae } from 'react-native-textinput-effects';
+import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
 
 import { VARIABLES } from '../style/variables.js';
 
@@ -88,14 +90,35 @@ export default class Input extends React.Component {
 
   renderNumberContent(value) {
     return (
-      <View style={styles.label}>
-        <TextInput style={styles.input} value={value} //keyboardType={'numeric'}
-              onSubmitEditing={Keyboard.dismiss}
-              onChange={(e) => this.handleTextChange(e.nativeEvent.text)}
-              onBlur={(e) => this.handleTextBlur(e.nativeEvent.text)}>
-        </TextInput>
-        {this.renderPrompt()}
-      </View>
+      // <View style={styles.label}>
+      //   <TextInput style={styles.input} value={value} //keyboardType={'numeric'}
+      //         onSubmitEditing={Keyboard.dismiss}
+      //         onChange={(e) => this.handleTextChange(e.nativeEvent.text)}
+      //         onBlur={(e) => this.handleTextBlur(e.nativeEvent.text)}>
+      //   </TextInput>
+      //   {this.renderPrompt()}
+      // </View>
+      // <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+        <Sae
+          label={this.props.isBase ? this.props.factor.basePrompt : this.props.factor.prompt}
+          iconClass={FontAwesomeIcon}
+          iconName={'pencil'}
+          iconColor={VARIABLES.BLUE_LIGHT}
+          inputPadding={16}
+          labelHeight={24}
+          // active border height
+          borderHeight={2}
+          // TextInput props
+          autoCapitalize={'none'}
+          autoCorrect={false}
+          keyboardType={'numeric'}
+          style={styles.inputWrap}
+          labelStyle={styles.prompt}
+          inputStyle={styles.input}
+          onChange={(e) => this.handleTextChange(e.nativeEvent.text)}
+          onBlur={(e) => this.handleTextBlur(e.nativeEvent.text)}
+        />
+      // </TouchableWithoutFeedback>
     )
   }
 
@@ -120,35 +143,50 @@ export default class Input extends React.Component {
 
 const styles = StyleSheet.create({
   factor: {
-    color: VARIABLES.BLUE_LIGHT
+    // flex: 1,
+    color: VARIABLES.BLUE_LIGHT,
+    // display: 'flex',
+    // alignItems: 'center'
   },
 
-  container: {
-    flex: 1,
+  // container: {
+  //   flex: 1,
+  //   display: 'flex',
+  //   flexDirection: 'row',
+  //   backgroundColor: VARIABLES.BLUE_DARK,
+  //   alignItems: 'center',
+  //   justifyContent: 'center',
+  // },
+
+  inputWrap: {
+    // position: 'relative',
+    // paddingTop: VARIABLES.GUTTER_MINI * 2,
+    fontSize: 12,
+    lineHeight: 12,
     display: 'flex',
-    flexDirection: 'row',
-    backgroundColor: VARIABLES.BLUE_DARK,
     alignItems: 'center',
     justifyContent: 'center',
-  },
-
-  label: {
-    color: VARIABLES.WHITE,
-    // position: 'relative',
-    // padding-top: $gutter-mini*2;
+    overflow: 'visible',
+    marginTop: VARIABLES.GUTTER,
+    marginBottom: VARIABLES.GUTTER
   },
 
   prompt: {
-    color: VARIABLES.WHITE,
+    fontSize: 24,
+    // lineHeight: 32,
+    color: VARIABLES.BLUE_LIGHT,
+    fontWeight: 'normal',
     // position: 'absolute',
     textAlign: 'center',
     // bottom: 0,
-    width: '100%',
+    // width: '100%',
     // transition: all $transition-fast;
   },
 
   input: {
-    color: VARIABLES.WHITE,
+    fontSize: 24,
+    lineHeight: 32,
+    color: VARIABLES.BLUE_LIGHT,
     width: '50%',
     marginLeft: 'auto',
     marginRight: 'auto',
