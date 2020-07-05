@@ -134,7 +134,7 @@ export default class Results extends React.Component {
 
       display: 'flex',
       justifyContent:'flex-start',
-      alignItems: 'felx-end',
+      alignItems: 'flex-end',
 
       height: heightPercent,
       backgroundColor: color

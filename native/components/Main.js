@@ -1,8 +1,12 @@
 import React from 'react';
-import { Keyboard, TouchableWithoutFeedback, StyleSheet, Text, TouchableOpacity, View, Image } from 'react-native';
+import { Keyboard, TouchableWithoutFeedback, StyleSheet, Text, SafeAreaView, View } from 'react-native';
+import Button from 'react-native-button';
+import { Pages } from 'react-native-pages';
+import AsyncStorage from '@react-native-community/async-storage';
 import _ from 'lodash';
 
 import Factor from './Factor.js';
+import History from './History.js';
 import Results from './Results.js';
 
 import { INITIAL_FACTORS, calculateGsv, getInputFromFactor } from '../util.js';
@@ -17,6 +21,88 @@ export default class Main extends React.Component {
       factors: INITIAL_FACTORS,
       baseModalOpen: false
     };
+  }
+
+  componentDidMount() {
+    this.getNextEventId();
+    this.getHistory();
+  }
+
+  async getNextEventId() {
+    try {
+      const nextEventId = await AsyncStorage.getItem('nextEventId');
+      if (nextEventId !== null) {
+        this.setState({
+          nextEventId: nextEventId
+        });
+      } else {
+        this.saveNextEventId();
+      }
+    } catch(e) {
+      // try again
+      this.getNextEventId();
+    }
+  }
+
+  async saveNextEventId(current = null) {
+    let nextEventId;
+    if (current === null) {
+      nextEventId = '0';
+    } else {
+      nextEventId = parseInt(current) + 1 + '';
+    }
+
+    try {
+      this.setState({
+        nextEventId: nextEventId
+      });
+      await AsyncStorage.setItem('nextEventId', nextEventId);
+    } catch (e) {
+      console.warn('Error saving nextEventId:', e)
+    }
+  }
+
+  async getHistory() {
+    try {
+      let history = [];
+      const historyJson = await AsyncStorage.getItem('history');
+      if (historyJson !== null) {
+        history = JSON.parse(historyJson);
+      }
+      this.setState({
+        history: history
+      })
+    } catch(e) {
+      // try again
+      this.getHistory();
+    }
+  }
+
+  async saveEvent() {
+    if (!this.state.nextEventId) {
+      await this.getNextEventId();
+    }
+    if (!this.state.history) {
+      await this.getHistory();
+    }
+
+    let newEvent = {
+      id: this.state.nextEventId,
+      timestamp: Date.now(),
+      factors: this.state.factors
+    }
+
+    try {
+      let history = _.cloneDeep(this.state.history);
+      history.push(newEvent);
+      await AsyncStorage.setItem('history', JSON.stringify(history));
+      this.saveNextEventId(this.state.nextEventId);
+      this.setState({
+        history: history
+      })
+    } catch(e) {
+      console.warn('Error saving history:', e)
+    }
   }
 
   handleFactorInputChange(factor) {
@@ -78,33 +164,55 @@ export default class Main extends React.Component {
 
   render() {
     return (
-      <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-        <View style={styles.container}>
-          <View style={styles.left}>
-            {this.renderFactors()}
-          </View>
+      <Pages>
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+          <SafeAreaView style={styles.main}>
+            <View style={styles.container}>
+              <View style={styles.left}>
+                {this.renderFactors()}
+              </View>
 
-          <View style={styles.right}>
-            {/* <Text style={styles.gsv}>
-              {calculateGsv(this.state.factors)}
-            </Text> */}
-            <Results gsv={calculateGsv(this.state.factors)} />
-          </View>
-        </View>
-      </TouchableWithoutFeedback>
+              <View style={styles.right}>
+                <Results gsv={calculateGsv(this.state.factors)} />
+              </View>
+            </View>
+            <Button style={styles.save}
+                    onPress={() => this.saveEvent()}>
+              Save
+            </Button>
+          </SafeAreaView>
+        </TouchableWithoutFeedback>
+        <History history={this.state.history} />
+      </Pages>
     );
   }
 }
 
 const styles = StyleSheet.create({
+  main: {
+    flex: 1,
+    position: 'relative',
+    backgroundColor: VARIABLES.BLUE_DARK,
+    padding: VARIABLES.GUTTER_MINI
+  },
+
+  save: {
+    backgroundColor: VARIABLES.WHITE,
+    color: VARIABLES.BLUE_DARK,
+    width: 100,
+    position: 'absolute',
+    bottom: VARIABLES.GUTTER*4,
+    right: '50%',
+    transform: [{translateX: 50}],
+    padding: VARIABLES.GUTTER_MINI
+  },
+
   container: {
     flex: 1,
     display: 'flex',
     flexDirection: 'row',
-    backgroundColor: VARIABLES.BLUE_DARK,
     alignItems: 'center',
     justifyContent: 'center',
-    padding: VARIABLES.GUTTER_MINI
   },
 
   left: {
