@@ -1,5 +1,6 @@
 import React from 'react';
-import { StyleSheet, View, Text, FlatList, SafeAreaView } from 'react-native';
+import { StyleSheet, Dimensions, View, Text, FlatList, SafeAreaView } from 'react-native';
+import { VictoryBar, VictoryChart, VictoryAxis, VictoryTheme } from "victory-native";
 import _ from 'lodash';
 
 import { calculateGsv, getGsvText, gsvToColor } from '../util.js';
@@ -68,10 +69,67 @@ export default class History extends React.Component {
       );
     }
 
+    const chartData = [{gsv: 0, timestamp: 0}].concat(history.map((event) => {
+      return {
+        timestamp: event.timestamp,
+        gsv: calculateGsv(event.factors)
+      }
+    }));
+
+    let chartTheme = VictoryTheme.grayscale;
+    chartTheme.axis.style.axisLabel.fill = VARIABLES.BLUE_LIGHT;
+    chartTheme.axis.style.tickLabels.fill = VARIABLES.BLUE_LIGHT;
+
     return (
-      <FlatList data={history}
-                renderItem={({item}) => this.renderEvent(item)}
-                keyExtractor={event => event.id} />
+      <View>
+        <View style={styles.chart}>
+          <VictoryChart theme={chartTheme} scale={{x: "time", y: "sqrt"}}
+                        width={Dimensions.get('window').width - VARIABLES.GUTTER*2}
+                        height={Dimensions.get('window').height/4}>
+            <VictoryAxis
+              tickFormat={[]} label="Events Over Time"
+              style={{
+                axis: {stroke: VARIABLES.BLUE_LIGHT},
+                axisLabel: {fontSize: 16, padding: 8},
+                grid: {stroke: 'transparent'},
+                tickLabels: {fontSize: 0, padding: 0},
+                ticks: {
+                  size: 0
+                }
+              }} />
+            <VictoryAxis
+              dependentAxis
+              label="GSVs"
+              tickFormat={(gsv) => getGsvText(gsv)}
+              axisLabel={{fill: 'white'}}
+              style={{
+                axis: {stroke: VARIABLES.BLUE_LIGHT},
+                axisLabel: {fontSize: 16, padding: 30},
+                grid: {stroke: 'transparent'},
+                ticks: {
+                  stroke: VARIABLES.BLUE_LIGHT,
+                  size: 4
+                },
+                tickLabels: {fontSize: 12, padding: 4}
+              }}
+            />
+            <VictoryBar data={chartData} x="date" y="gsv"
+                        alignment="end"
+                        style={{
+                          data: {
+                            fill: ({datum}) => gsvToColor(datum.gsv)
+                          }
+                        }}
+                        animate={{
+                          duration: 500,
+                          onLoad: { duration: 500 }
+                        }} />
+          </VictoryChart>
+        </View>
+        <FlatList style={styles.events} data={history}
+                  renderItem={({item}) => this.renderEvent(item)}
+                  keyExtractor={event => event.id} />
+      </View>
     );
   }
 
@@ -83,7 +141,7 @@ export default class History extends React.Component {
             History
           </Text>
         </View>
-        <View style={styles.events}>
+        <View style={styles.main}>
           {this.renderHistory()}
         </View>
       </SafeAreaView>
@@ -108,8 +166,19 @@ const styles = StyleSheet.create({
     color: VARIABLES.WHITE
   },
 
-  events: {
+  main: {
     flexGrow: 1,
+    paddingBottom: VARIABLES.GUTTER*3
+  },
+
+  chart: {
+    paddingHorizontal: VARIABLES.GUTTER
+  },
+
+  events: {
+    marginTop: -VARIABLES.GUTTER_MINI,
+    borderTopColor: VARIABLES.BLUE_MEDIUM,
+    borderTopWidth: 2,
     paddingHorizontal: VARIABLES.GUTTER
   },
 
@@ -119,10 +188,13 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginVertical: VARIABLES.GUTTER/2
+    paddingVertical: VARIABLES.GUTTER/2,
+    borderBottomColor: VARIABLES.BLUE_MEDIUM,
+    borderBottomWidth: 1,
   },
 
   eventDate: {
+    textAlign: 'center',
     color: VARIABLES.WHITE,
     flexBasis: '25%',
     fontWeight: 'bold'
