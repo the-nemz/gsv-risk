@@ -17,6 +17,7 @@
     "react-native": "https://github.com/expo/react-native/archive/sdk-37.0.1.tar.gz",
     "react-native-button": "^3.0.1",
     "react-native-pages": "^0.9.0",
+    "react-native-picker-select": "^7.0.0",
     "react-native-svg": "^12.1.0",
     "react-native-textinput-effects": "^0.6.1",
     "react-native-vector-icons": "^6.6.0",
