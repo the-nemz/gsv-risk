@@ -1,6 +1,6 @@
 # GSV Risk
 
-Grocery Store Visits is a web application to calculate COVID-19 risk in terms we all know: going to the grocery store.
+Grocery Store Visits is a web and native application to calculate COVID-19 risk in terms we all know: going to the grocery store.
 
 ## Project Structure
 

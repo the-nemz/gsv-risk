@@ -9,8 +9,8 @@ import Factor from './Factor.js';
 import History from './History.js';
 import Results from './Results.js';
 
-import { INITIAL_FACTORS, calculateGsv, getInputFromFactor } from '../_util.js';
-import { VARIABLES } from '../style/variables.js';
+import { INITIAL_FACTORS, calculateGsv, getInputFromFactor } from '../common/_util.js';
+import { VARIABLES } from '../common/style.js';
 
 export default class Main extends React.Component {
 

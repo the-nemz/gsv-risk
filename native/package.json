@@ -1,7 +1,7 @@
 {
   "main": "node_modules/expo/AppEntry.js",
   "scripts": {
-    "util": "cp ../app/src/js/util.js ./_util.js",
+    "util": "cp ../app/src/js/util.js ./common/_util.js",
     "start": "yarn util && expo start",
     "android": "yarn util && expo start --android",
     "ios": "yarn util && expo start --ios",

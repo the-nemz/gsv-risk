@@ -3,12 +3,12 @@ import { StyleSheet, View, Text, Animated, Easing } from 'react-native';
 import _ from 'lodash';
 import Svg, { G, Path } from 'react-native-svg';
 
-import { VARIABLES } from '../style/variables.js';
+import { VARIABLES } from '../common/style.js';
 
 import {
   getGsvText, calculateLogFraction, gsvToColor, getRandomInt,
   RED_GSV, RED_HUE, GREEN_HUE
-} from '../_util.js';
+} from '../common/_util.js';
 
 const MAX_LAT = 102;
 const BAR_WIDTH = VARIABLES.GUTTER_MINI*6;

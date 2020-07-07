@@ -4,7 +4,7 @@ import { Sae } from 'react-native-textinput-effects';
 import Select from 'react-native-picker-select';
 import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
 
-import { VARIABLES } from '../style/variables.js';
+import { VARIABLES } from '../common/style.js';
 
 const PLACEHOLDER = 'PLACEHOLDER';
 
