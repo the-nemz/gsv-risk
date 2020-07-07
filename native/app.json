@@ -1,19 +1,18 @@
 {
   "expo": {
-    "name": "native",
-    "slug": "native",
+    "name": "GSV Risk",
+    "slug": "gsv-risk",
     "platforms": [
       "ios",
-      "android",
-      "web"
+      "android"
     ],
-    "version": "1.0.0",
+    "version": "0.0.9",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/default.png",
     "splash": {
-      "image": "./assets/splash.png",
+      "image": "./assets/default.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#142850"
     },
     "updates": {
       "fallbackToCacheTimeout": 0
@@ -22,7 +21,11 @@
       "**/*"
     ],
     "ios": {
+      "bundleIdentifier": "the-nemz.gsvrisk",
+      "buildNumber": "0.0.9",
       "supportsTablet": true
-    }
+    },
+    "description": "Grocery Store Visits is an app to calculate COVID-19 risk in terms we all know: going to the grocery store.",
+    "githubUrl": "https://github.com/the-nemz/gsv-risk"
   }
 }
