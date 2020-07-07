@@ -1,0 +1,33 @@
+{
+  "main": "node_modules/expo/AppEntry.js",
+  "scripts": {
+    "util": "cp ../app/src/js/util.js ./_util.js",
+    "start": "yarn util && expo start",
+    "android": "yarn util && expo start --android",
+    "ios": "yarn util && expo start --ios",
+    "web": "yarn util && expo start --web",
+    "eject": "expo eject"
+  },
+  "dependencies": {
+    "@react-native-community/async-storage": "^1.11.0",
+    "expo": "~37.0.3",
+    "expo-image-picker": "~8.1.0",
+    "lodash": "^4.17.15",
+    "react": "~16.9.0",
+    "react-dom": "~16.9.0",
+    "react-native": "https://github.com/expo/react-native/archive/sdk-37.0.1.tar.gz",
+    "react-native-button": "^3.0.1",
+    "react-native-pages": "^0.9.0",
+    "react-native-picker-select": "^7.0.0",
+    "react-native-svg": "^12.1.0",
+    "react-native-textinput-effects": "^0.6.1",
+    "react-native-vector-icons": "^6.6.0",
+    "react-native-web": "~0.11.7",
+    "victory-native": "^35.0.0"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.8.6",
+    "babel-preset-expo": "~8.1.0"
+  },
+  "private": true
+}

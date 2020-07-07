@@ -4,8 +4,11 @@ Grocery Store Visits is a web application to calculate COVID-19 risk in terms we
 
 ## Project Structure
 
-### Front end code: `app/`
-`app/` contains all the code for the React front end. It was created with create-react-app and can be used as such, like running locally with `yarn start`.
+### Web front end code: `app/`
+`app/` contains all the code for the React web front end. It was created with create-react-app and can be used as such, like running locally with `yarn start`.
+
+### Native front end code: `native/`
+`native/` contains all the code for the React Native front end. It was created with expo and can be used as such, like running locally with `yarn start`.
 
 ### Server code: `server/`
 `server/` and `index.js` contain the code for the the express server that runs as a Firebase function. It is a small server-side rendered React app to put meta content in the head dynamically. It can be compiled using `yarn babel`.
