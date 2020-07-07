@@ -1,5 +1,5 @@
 import React from 'react';
-import { Keyboard, TouchableWithoutFeedback, StyleSheet, Text, SafeAreaView, View } from 'react-native';
+import { Keyboard, TouchableWithoutFeedback, StyleSheet, SafeAreaView, View } from 'react-native';
 import Button from 'react-native-button';
 import { Pages } from 'react-native-pages';
 import AsyncStorage from '@react-native-community/async-storage';

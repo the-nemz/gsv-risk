@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Keyboard, View, Text, Animated, Easing } from 'react-native';
+import { StyleSheet, View, Text, Animated, Easing } from 'react-native';
 import _ from 'lodash';
 import Svg, { G, Path } from 'react-native-svg';
 
@@ -153,7 +153,6 @@ export default class Results extends React.Component {
   render() {
     let gsv = this.props.gsv;
     const heightPercent = `${100 * calculateLogFraction(gsv)}%`;
-    // const heightPercent = 100 * calculateLogFraction(gsv);
     const color = gsvToColor(gsv);
     const height = this.barAnim.interpolate({
       inputRange: [0, 1],

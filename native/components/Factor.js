@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Keyboard, View, Text, TextInput, TouchableWithoutFeedback, Animated, Easing } from 'react-native';
+import { StyleSheet, View, Text, Animated, Easing } from 'react-native';
 import { Sae } from 'react-native-textinput-effects';
 import Select from 'react-native-picker-select';
 import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
@@ -7,13 +7,6 @@ import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
 import { VARIABLES } from '../style/variables.js';
 
 const PLACEHOLDER = 'PLACEHOLDER';
-
-const FACTOR_ID_TO_ICON = {
-  transmission: 'bullseye',
-  interactions: 'users',
-  masks: 'shield',
-  infected: 'line-chart'
-}
 
 export default class Input extends React.Component {
 
@@ -176,30 +169,14 @@ export default class Input extends React.Component {
       }
     }
 
-    const iconName = FACTOR_ID_TO_ICON[this.props.factor.id] || 'pencil';
-    const icon = (
-      <View style={styles.selectIconWrap}>
-        <FontAwesomeIcon styles={styles.selectIcon} name={iconName} size={22} color={VARIABLES.BLUE_LIGHT} />
-      </View>
-    );
-
     const viewStyle = this.state.inputChanging || value !== null ? [styles.selectWrap, styles.selectWrap_bordered] : [styles.selectWrap];
 
     return (
       <View style={viewStyle}>
         {this.state.inputChanging || value !== null ? prompt : null}
         <Select style={selectStyle} value={value} items={this.props.factor.options}
-                // Icon={() => {
-                //   if (value === null) {
-                //     const iconName = FACTOR_ID_TO_ICON[this.props.factor.id] || 'pencil';
-                //     return <FontAwesomeIcon name={iconName} size={22} color={VARIABLES.BLUE_LIGHT} />;
-                //   } else {
-                //     return null
-                //   }
-                // }}
                 onOpen={() => {
                   this.setState({ inputChanging: true });
-                  // this.selectAnim.setValue(0);
                   if (value === null) {
                     this.animateSelect();
                   }
@@ -209,7 +186,6 @@ export default class Input extends React.Component {
                 }}
                 onValueChange={(value) => this.handleSelectChange(value)}
                 placeholder={!this.state.inputChanging && value === null ? {label: promptText, value: PLACEHOLDER} : {label: promptText, value: PLACEHOLDER}} />
-        {/* {value === null ? icon : null} */}
         {border}
       </View>
     );
@@ -257,27 +233,13 @@ export default class Input extends React.Component {
 
 const styles = StyleSheet.create({
   factor: {
-    // flex: 1,
     width: '100%',
     color: VARIABLES.BLUE_LIGHT,
     paddingLeft: 16,
     overflow: 'hidden',
-    // display: 'flex',
-    // alignItems: 'center'
   },
 
-  // container: {
-  //   flex: 1,
-  //   display: 'flex',
-  //   flexDirection: 'row',
-  //   backgroundColor: VARIABLES.BLUE_DARK,
-  //   alignItems: 'center',
-  //   justifyContent: 'center',
-  // },
-
   inputWrap: {
-    // position: 'relative',
-    // paddingTop: VARIABLES.GUTTER_MINI * 2,
     fontSize: 12,
     lineHeight: 12,
     display: 'flex',
@@ -290,14 +252,9 @@ const styles = StyleSheet.create({
 
   prompt: {
     fontSize: 24,
-    // lineHeight: 32,
     color: VARIABLES.BLUE_LIGHT,
     fontWeight: 'normal',
-    // position: 'absolute',
-    textAlign: 'center',
-    // bottom: 0,
-    // width: '100%',
-    // transition: all $transition-fast;
+    textAlign: 'center'
   },
 
   input: {
@@ -307,26 +264,15 @@ const styles = StyleSheet.create({
     width: '50%',
     marginLeft: 'auto',
     marginRight: 'auto',
-    textAlign: 'center',
-    // backgroundColor: 'transparent';
-    // outline: 0;
-    // border-bottom: $border-default $blue-light;
-    // transition: all $transition-fast;
+    textAlign: 'center'
   },
 
   selectWrap: {
     display: 'flex',
-    flexDirection: 'column',
-    // borderBottomColor: 'transparent',
-    // borderBottomWidth: 2
-  },
-
-  selectWrap_bordered: {
-    // borderBottomColor: VARIABLES.BLUE_LIGHT
+    flexDirection: 'column'
   },
 
   selectPrompt: {
-    // fontSize: 12,
     color: VARIABLES.BLUE_LIGHT,
     fontWeight: 'normal',
     textAlign: 'center'
