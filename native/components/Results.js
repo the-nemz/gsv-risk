@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Keyboard, View, Text, Image, TouchableWithoutFeedback } from 'react-native';
+import { StyleSheet, Keyboard, View, Text, Animated, Easing } from 'react-native';
 import _ from 'lodash';
 import Svg, { G, Path } from 'react-native-svg';
 
@@ -17,6 +17,7 @@ export default class Results extends React.Component {
 
   constructor(props) {
     super(props);
+    this.virusPosition = new Animated.Value(0);
     this.state = {
       viruses: [],
       nextVirusId: 0
@@ -24,10 +25,23 @@ export default class Results extends React.Component {
   }
 
   componentDidMount() {
+    this.moveCoronas();
     this.timerID = setInterval(
       () => this.updateCoronas(),
       500
     );
+  }
+
+  moveCoronas() {
+    this.virusPosition.setValue(0)
+    Animated.timing(
+      this.virusPosition,
+      {
+        toValue: 1,
+        duration: 500,
+        easing: Easing.linear
+      }
+    ).start(() => this.moveCoronas())
   }
 
   updateCoronas() {
@@ -55,6 +69,7 @@ export default class Results extends React.Component {
         // All viruses start at size = 1 and grow on first movement
         virus.size = getRandomInt(coronaMaxSizeFromFrac(frac)) + 2
       }
+      virus.latPrev = virus.lat;
       virus.lat += virus.speed;
       if (virus.lat > MAX_LAT) {
         // Decrease size when virus passes top of bar
@@ -67,6 +82,7 @@ export default class Results extends React.Component {
       let newVirus = {
         id: this.state.nextVirusId,
         color: coronaHSLObjectFromFrac(frac),
+        latPrev: 0,
         lat: 0,
         lng: getRandomInt(BAR_WIDTH*1.1) - BAR_WIDTH*0.05, // [-5, 105)% of BAR_WDITH allows virsuses to be slightly outside bar
         size: 1,
@@ -98,17 +114,21 @@ export default class Results extends React.Component {
   renderViruses(heightPercent) {
     let viruses = [];
     for (const virus of this.state.viruses) {
+      const distance = this.virusPosition.interpolate({
+        inputRange: [0, 1],
+        outputRange: [`${virus.latPrev}%`, `${virus.lat}%`]
+      })
       const virusStyle = {
         position: 'absolute',
-        bottom: `${virus.lat}%`,
+        bottom: distance,
         left: virus.lng - virus.size/2,
         width: virus.size,
         height: virus.size,
       }
       viruses.push(
-        <View key={virus.id} style={virusStyle}>
+        <Animated.View key={virus.id} style={virusStyle}>
           {this.renderVirusSVG(virus.color)}
-        </View>
+        </Animated.View>
       );
     }
     return viruses;
@@ -150,8 +170,7 @@ const styles = StyleSheet.create({
 
   bar: {
     position: 'relative',
-    width: BAR_WIDTH,
-    // transition: all $transition-slow
+    width: BAR_WIDTH
   },
 
   num: {
