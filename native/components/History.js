@@ -3,7 +3,7 @@ import { StyleSheet, Dimensions, View, Text, FlatList, SafeAreaView } from 'reac
 import { VictoryBar, VictoryChart, VictoryAxis, VictoryTheme } from "victory-native";
 import _ from 'lodash';
 
-import { calculateGsv, getGsvText, gsvToColor } from '../util.js';
+import { calculateGsv, getGsvText, gsvToColor } from '../_util.js';
 import { VARIABLES } from '../style/variables.js';
 
 export default class History extends React.Component {

@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Keyboard, View, Text, TextInput, TouchableWithoutFeedback } from 'react-native';
+import { StyleSheet, Keyboard, View, Text, TextInput, TouchableWithoutFeedback, Animated, Easing } from 'react-native';
 import { Sae } from 'react-native-textinput-effects';
 import Select from 'react-native-picker-select';
 import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
@@ -19,9 +19,26 @@ export default class Input extends React.Component {
 
   constructor(props) {
     super(props);
+    this.selectAnim = new Animated.Value(0);
     this.state = {
       inputChanging: false
     };
+  }
+
+  componentDidMount() {
+    this.animateSelect();
+  }
+
+  animateSelect() {
+    this.selectAnim.setValue(0);
+    Animated.timing(
+      this.selectAnim,
+      {
+        toValue: 1,
+        duration: 300,
+        easing: Easing.linear
+      }
+    ).start();
   }
 
   handleInputFocus(value) {
@@ -111,11 +128,31 @@ export default class Input extends React.Component {
       }
     }
 
+    const fontSize = this.selectAnim.interpolate({
+      inputRange: [0, 1],
+      outputRange: [20, 12]
+    });
     let promptText = this.props.isBase ? this.props.factor.basePrompt : this.props.factor.prompt;
     let prompt = (
-      <Text style={styles.selectPrompt}>
+      <Animated.Text style={[styles.selectPrompt, {fontSize: fontSize}]}>
         {promptText}
-      </Text>
+      </Animated.Text>
+    );
+
+    const width = this.selectAnim.interpolate({
+      inputRange: [0, 1],
+      outputRange: ['0%', '100%']
+    });
+    let border = (
+      <Animated.View style={{
+        borderBottomColor: VARIABLES.BLUE_LIGHT,
+        borderBottomWidth: this.state.inputChanging || value !== null ? 2 : 0,
+        width: width,
+        position: 'absolute',
+        bottom: 0,
+        right: 0
+      }}>
+      </Animated.View>
     );
 
     let selectStyle = {
@@ -161,7 +198,11 @@ export default class Input extends React.Component {
                 //   }
                 // }}
                 onOpen={() => {
-                  this.setState({ inputChanging: true })
+                  this.setState({ inputChanging: true });
+                  // this.selectAnim.setValue(0);
+                  if (value === null) {
+                    this.animateSelect();
+                  }
                 }}
                 onClose={() => {
                   this.setState({ inputChanging: false })
@@ -169,6 +210,7 @@ export default class Input extends React.Component {
                 onValueChange={(value) => this.handleSelectChange(value)}
                 placeholder={!this.state.inputChanging && value === null ? {label: promptText, value: PLACEHOLDER} : {label: promptText, value: PLACEHOLDER}} />
         {/* {value === null ? icon : null} */}
+        {border}
       </View>
     );
   }
@@ -275,16 +317,16 @@ const styles = StyleSheet.create({
   selectWrap: {
     display: 'flex',
     flexDirection: 'column',
-    borderBottomColor: 'transparent',
-    borderBottomWidth: 2
+    // borderBottomColor: 'transparent',
+    // borderBottomWidth: 2
   },
 
   selectWrap_bordered: {
-    borderBottomColor: VARIABLES.BLUE_LIGHT
+    // borderBottomColor: VARIABLES.BLUE_LIGHT
   },
 
   selectPrompt: {
-    fontSize: 12,
+    // fontSize: 12,
     color: VARIABLES.BLUE_LIGHT,
     fontWeight: 'normal',
     textAlign: 'center'

@@ -8,16 +8,18 @@ import { VARIABLES } from '../style/variables.js';
 import {
   getGsvText, calculateLogFraction, gsvToColor, getRandomInt,
   RED_GSV, RED_HUE, GREEN_HUE
-} from '../util.js';
+} from '../_util.js';
 
 const MAX_LAT = 102;
-const BAR_WIDTH = VARIABLES.GUTTER*4;
+const BAR_WIDTH = VARIABLES.GUTTER_MINI*6;
 
 export default class Results extends React.Component {
 
   constructor(props) {
     super(props);
-    this.virusPosition = new Animated.Value(0);
+    this.virusAnim = new Animated.Value(0);
+    this.barAnim = new Animated.Value(0);
+    this.heightPercent = `0%`;
     this.state = {
       viruses: [],
       nextVirusId: 0
@@ -26,6 +28,7 @@ export default class Results extends React.Component {
 
   componentDidMount() {
     this.moveCoronas();
+    this.animateBar();
     this.timerID = setInterval(
       () => this.updateCoronas(),
       500
@@ -33,15 +36,27 @@ export default class Results extends React.Component {
   }
 
   moveCoronas() {
-    this.virusPosition.setValue(0)
+    this.virusAnim.setValue(0);
     Animated.timing(
-      this.virusPosition,
+      this.virusAnim,
       {
         toValue: 1,
         duration: 500,
         easing: Easing.linear
       }
-    ).start(() => this.moveCoronas())
+    ).start();
+  }
+
+  animateBar() {
+    this.barAnim.setValue(0);
+    Animated.timing(
+      this.barAnim,
+      {
+        toValue: 1,
+        duration: 400,
+        easing: Easing.linear
+      }
+    ).start();
   }
 
   updateCoronas() {
@@ -114,10 +129,10 @@ export default class Results extends React.Component {
   renderViruses(heightPercent) {
     let viruses = [];
     for (const virus of this.state.viruses) {
-      const distance = this.virusPosition.interpolate({
+      const distance = this.virusAnim.interpolate({
         inputRange: [0, 1],
         outputRange: [`${virus.latPrev}%`, `${virus.lat}%`]
-      })
+      });
       const virusStyle = {
         position: 'absolute',
         bottom: distance,
@@ -131,30 +146,39 @@ export default class Results extends React.Component {
         </Animated.View>
       );
     }
+    this.moveCoronas();
     return viruses;
   }
 
   render() {
     let gsv = this.props.gsv;
     const heightPercent = `${100 * calculateLogFraction(gsv)}%`;
+    // const heightPercent = 100 * calculateLogFraction(gsv);
     const color = gsvToColor(gsv);
+    const height = this.barAnim.interpolate({
+      inputRange: [0, 1],
+      outputRange: [this.heightPercent, heightPercent]
+    });
 
     let barStyle = {
-      height: heightPercent,
+      height: height,
       backgroundColor: color
     };
 
+    this.heightPercent = heightPercent;
+    this.animateBar();
+
     return (
       <View style={styles.results}>
-        <View style={[styles.bar, barStyle]}>
-          <Text style={styles.num}>
+        <Animated.View style={[styles.bar, barStyle]}>
+          <Text style={styles.num} numberOfLines={1}>
             {getGsvText(gsv)}
           </Text>
           <Text style={styles.label}>
             Grocery Store Visits
           </Text>
           {this.renderViruses()}
-        </View>
+        </Animated.View>
       </View>
     );
   }
@@ -165,11 +189,14 @@ const styles = StyleSheet.create({
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'flex-end',
-    height: '60%'
+    height: '50%'
   },
 
   bar: {
-    position: 'relative',
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    transform: [{translateX: -BAR_WIDTH/2}],
     width: BAR_WIDTH
   },
 
