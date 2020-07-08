@@ -11,7 +11,24 @@ export default class Input extends React.Component {
 
   constructor(props) {
     super(props);
+    this.fadeAnim = new Animated.Value(0);
     this.state = {};
+  }
+
+  componentDidMount() {
+    this.fadeIn();
+  }
+
+  fadeIn() {
+    this.fadeAnim.setValue(0);
+    Animated.timing(
+      this.fadeAnim,
+      {
+        toValue: 1,
+        duration: 400,
+        easing: Easing.ease
+      }
+    ).start();
   }
 
   renderFactors() {
@@ -29,22 +46,29 @@ export default class Input extends React.Component {
   }
 
   render() {
+    const opacity = this.fadeAnim.interpolate({
+      inputRange: [0, 1],
+      outputRange: [0, 1]
+    });
+
     return (
       <TouchableWithoutFeedback onPress={() => this.props.onCloseModal()} accessible={false}>
-        <SafeAreaView style={styles.baseModal}>
-          <View style={styles.content}>
-            <Button style={styles.close}
-                    onPress={() => this.props.onCloseModal()}>
-              <FontAwesomeIcon style={styles.closeIcon} name={'times-circle'} size={22} color={VARIABLES.BLUE_LIGHT} />
-            </Button>
-            <Text style={styles.heading}>
-              What are your grocery store visits like?
-            </Text>
-            <View style={styles.factors}>
-              {this.renderFactors()}
+        <Animated.View style={[styles.baseModal, {opacity: opacity}]}>
+          <SafeAreaView style={styles.safeArea}>
+            <View style={styles.content}>
+              <Button style={styles.close}
+                      onPress={() => this.props.onCloseModal()}>
+                <FontAwesomeIcon style={styles.closeIcon} name={'times-circle'} size={22} color={VARIABLES.BLUE_LIGHT} />
+              </Button>
+              <Text style={styles.heading}>
+                What are your grocery store visits like?
+              </Text>
+              <View style={styles.factors}>
+                {this.renderFactors()}
+              </View>
             </View>
-          </View>
-        </SafeAreaView>
+          </SafeAreaView>
+        </Animated.View>
       </TouchableWithoutFeedback>
     );
   }
@@ -52,13 +76,18 @@ export default class Input extends React.Component {
 
 const styles = StyleSheet.create({
   baseModal: {
+    backgroundColor: VARIABLES.BLACK_TRANSPARENT,
     position: 'absolute',
     bottom: 0,
     left: 0,
     width: '100%',
     height: '100%',
-    backgroundColor: VARIABLES.BLACK_TRANSPARENT,
     zIndex: 1
+  },
+
+  safeArea: {
+    width: '100%',
+    height: '100%'
   },
 
   heading: {

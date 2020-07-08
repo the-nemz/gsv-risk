@@ -12,6 +12,7 @@ export default class Input extends React.Component {
 
   constructor(props) {
     super(props);
+    this.fadeAnim = new Animated.Value(0);
     this.selectAnim = new Animated.Value(0);
     this.state = {
       inputChanging: false
@@ -19,7 +20,20 @@ export default class Input extends React.Component {
   }
 
   componentDidMount() {
+    this.fadeIn();
     this.animateSelect();
+  }
+
+  fadeIn() {
+    this.fadeAnim.setValue(0);
+    Animated.timing(
+      this.fadeAnim,
+      {
+        toValue: 1,
+        duration: 400,
+        easing: Easing.ease
+      }
+    ).start();
   }
 
   animateSelect() {
@@ -224,10 +238,16 @@ export default class Input extends React.Component {
     const value = this.props.isBase ? baseValue : inputValue;
 
     const content = this.props.factor.options ? this.renderSelectContent() : this.renderNumberContent(value);
+
+    const opacity = this.fadeAnim.interpolate({
+      inputRange: [0, 1],
+      outputRange: [0, 1]
+    });
+
     return (
-      <View style={styles.factor} hasvalue={value ? 'true' : 'false'} ischanging={this.state.inputChanging + ''}>
+      <Animated.View style={[styles.factor, {opacity: opacity}]} hasvalue={value ? 'true' : 'false'} ischanging={this.state.inputChanging + ''}>
         {content}
-      </View>
+      </Animated.View>
     );
   }
 }

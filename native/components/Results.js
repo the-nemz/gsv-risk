@@ -54,7 +54,7 @@ export default class Results extends React.Component {
       {
         toValue: 1,
         duration: 400,
-        easing: Easing.linear
+        easing: Easing.ease
       }
     ).start();
   }
