@@ -91,7 +91,7 @@ export default class Main extends React.Component {
     let newEvent = {
       id: this.state.nextEventId,
       timestamp: Date.now(),
-      factors: this.state.factors
+      factors: _.cloneDeep(this.state.factors)
     }
 
     try {
@@ -101,7 +101,7 @@ export default class Main extends React.Component {
       this.saveNextEventId(this.state.nextEventId);
       this.setState({
         history: history
-      })
+      });
     } catch(e) {
       console.warn('Error saving history:', e)
     }
