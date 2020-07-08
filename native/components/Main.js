@@ -19,14 +19,23 @@ export default class Main extends React.Component {
   constructor(props) {
     super(props);
 
+    let base = {};
+    for (const factor of INITIAL_FACTORS) {
+      if (factor.customizeBase) {
+        base[factor.id] = factor.baseValue;
+      }
+    }
+
     this.state = {
       factors: INITIAL_FACTORS,
+      base: base,
       baseModalOpen: false
     };
   }
 
   componentDidMount() {
     this.getNextEventId();
+    this.getBase();
     this.getHistory();
   }
 
@@ -80,6 +89,22 @@ export default class Main extends React.Component {
     }
   }
 
+  async getBase() {
+    try {
+      let base = _.cloneDeep(this.state.base);
+      const baseJson = await AsyncStorage.getItem('base');
+      if (baseJson !== null) {
+        base = JSON.parse(baseJson);
+      }
+      this.setState({
+        base: base
+      })
+    } catch(e) {
+      // try again
+      this.getBase();
+    }
+  }
+
   async saveEvent() {
     if (!this.state.nextEventId) {
       await this.getNextEventId();
@@ -97,13 +122,32 @@ export default class Main extends React.Component {
     try {
       let history = _.cloneDeep(this.state.history);
       history.push(newEvent);
-      await AsyncStorage.setItem('history', JSON.stringify(history));
+      await this.saveHistory(history);
       this.saveNextEventId(this.state.nextEventId);
+    } catch(e) {
+      console.warn('Error saving history:', e)
+    }
+  }
+
+  async saveHistory(history) {
+    try {
+      await AsyncStorage.setItem('history', JSON.stringify(history));
       this.setState({
         history: history
       });
     } catch(e) {
       console.warn('Error saving history:', e)
+    }
+  }
+
+  async saveBase(base) {
+    try {
+      await AsyncStorage.setItem('base', JSON.stringify(base));
+      this.setState({
+        base: base
+      });
+    } catch(e) {
+      console.warn('Error saving base:', e)
     }
   }
 
@@ -127,21 +171,38 @@ export default class Main extends React.Component {
   }
 
   handleFactorBaseChange(factor) {
-    let factors = _.cloneDeep(this.state.factors);
-    for (const curr of factors) {
-      if (curr.id === factor.id && factor.customizeBase) {
-        const baseInput = getInputFromFactor(factor, true);
-        if (baseInput || baseInput === 0) {
-          curr.baseValue = baseInput;
-        }
+    let base = _.cloneDeep(this.state.base);
+    const baseInput = getInputFromFactor(factor, true);
+    if (baseInput || baseInput === 0) {
+      base[factor.id] = getInputFromFactor(factor, true);
+    } else {
+      return;
+    }
 
-        break;
+    const updateFactors = (factors) => {
+      for (const curr of factors) {
+        if (curr.id === factor.id && factor.customizeBase) {
+          curr.baseValue = base[factor.id];
+
+          break;
+        }
       }
+    }
+
+    let factors = _.cloneDeep(this.state.factors);
+    updateFactors(factors);
+
+    let history = _.cloneDeep(this.state.history);
+    for (const event of history) {
+      updateFactors(event.factors);
     }
 
     this.setState({
       factors: factors
-    })
+    });
+
+    this.saveHistory(history);
+    this.saveBase(base);
   }
 
   handleToggleBaseModal() {
@@ -166,7 +227,7 @@ export default class Main extends React.Component {
 
   render() {
     const baseModal = (
-      <BaseModal factors={this.state.factors}
+      <BaseModal factors={this.state.factors} base={this.state.base}
                  onCloseModal={() => this.handleToggleBaseModal()}
                  onFactorBaseChange={(factor) => this.handleFactorBaseChange(factor)} />
     );

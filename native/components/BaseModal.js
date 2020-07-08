@@ -16,8 +16,9 @@ export default class Input extends React.Component {
 
   renderFactors() {
     let factors = [];
-    for (const factor of this.props.factors) {
+    for (let factor of this.props.factors) {
       if (factor.customizeBase && factor.basePrompt) {
+        factor.baseValue = this.props.base[factor.id] || factor.baseValue;
         factors.push(
           <Factor isBase={true} factor={factor} key={factor.id}
                   onFactorInputChange={(factor) => this.props.onFactorBaseChange(factor)} />
