@@ -1,10 +1,12 @@
 import React from 'react';
-import { Keyboard, TouchableWithoutFeedback, StyleSheet, SafeAreaView, View } from 'react-native';
+import { Keyboard, TouchableWithoutFeedback, StyleSheet, SafeAreaView, View, Text } from 'react-native';
 import Button from 'react-native-button';
 import { Pages } from 'react-native-pages';
 import AsyncStorage from '@react-native-community/async-storage';
+import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
 import _ from 'lodash';
 
+import BaseModal from './BaseModal.js';
 import Factor from './Factor.js';
 import History from './History.js';
 import Results from './Results.js';
@@ -163,24 +165,39 @@ export default class Main extends React.Component {
   }
 
   render() {
+    const baseModal = (
+      <BaseModal factors={this.state.factors}
+                 onCloseModal={() => this.handleToggleBaseModal()}
+                 onFactorBaseChange={(factor) => this.handleFactorBaseChange(factor)} />
+    );
+
     return (
       <Pages>
         <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-          <SafeAreaView style={styles.main}>
-            <View style={styles.container}>
-              <View style={styles.left}>
-                {this.renderFactors()}
+          <View style={styles.wrapper}>
+            {this.state.baseModalOpen ? baseModal : null}
+            <SafeAreaView style={styles.main}>
+              <Button containerStyle={styles.baseModalButton}
+                      onPress={() => this.handleToggleBaseModal()}>
+                <FontAwesomeIcon style={styles.baseModalButtonIcon} name={'sliders'} size={28} color={VARIABLES.BLUE_DARK} />
+              </Button>
+
+              <View style={styles.container}>
+                <View style={styles.left}>
+                  {this.renderFactors()}
+                </View>
+
+                <View style={styles.right}>
+                  <Results gsv={calculateGsv(this.state.factors)} />
+                </View>
               </View>
 
-              <View style={styles.right}>
-                <Results gsv={calculateGsv(this.state.factors)} />
-              </View>
-            </View>
-            <Button style={styles.save}
-                    onPress={() => this.saveEvent()}>
-              Save
-            </Button>
-          </SafeAreaView>
+              <Button style={styles.save}
+                      onPress={() => this.saveEvent()}>
+                Save
+              </Button>
+            </SafeAreaView>
+          </View>
         </TouchableWithoutFeedback>
         <History history={this.state.history} />
       </Pages>
@@ -189,11 +206,29 @@ export default class Main extends React.Component {
 }
 
 const styles = StyleSheet.create({
+  wrapper: {
+    flex: 1
+  },
+
   main: {
     flex: 1,
     position: 'relative',
     backgroundColor: VARIABLES.BLUE_DARK,
     padding: VARIABLES.GUTTER_MINI
+  },
+
+  baseModalButton: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    right: VARIABLES.GUTTER,
+    top: VARIABLES.GUTTER
+  },
+
+  baseModalButtonIcon: {
+    backgroundColor: VARIABLES.WHITE,
+    paddingVertical: VARIABLES.GUTTER_MINI,
+    paddingHorizontal: VARIABLES.GUTTER_MINI + 2
   },
 
   save: {

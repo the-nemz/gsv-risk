@@ -195,6 +195,7 @@ export default class Input extends React.Component {
     return (
       <Sae
         label={this.props.isBase ? this.props.factor.basePrompt : this.props.factor.prompt}
+        value={value}
         iconClass={FontAwesomeIcon}
         iconName={null}
         iconColor={VARIABLES.BLUE_LIGHT}
