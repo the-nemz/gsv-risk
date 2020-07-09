@@ -8,7 +8,7 @@ import { VARIABLES } from '../common/style.js';
 
 const PLACEHOLDER = 'PLACEHOLDER';
 
-export default class Input extends React.Component {
+export default class Factor extends React.Component {
 
   constructor(props) {
     super(props);
@@ -256,7 +256,6 @@ const styles = StyleSheet.create({
   factor: {
     width: '100%',
     color: VARIABLES.BLUE_LIGHT,
-    paddingLeft: 16,
     overflow: 'hidden',
   },
 

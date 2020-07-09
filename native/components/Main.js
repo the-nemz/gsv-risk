@@ -151,6 +151,18 @@ export default class Main extends React.Component {
     }
   }
 
+  handleUpdateEvent(event) {
+    let history = _.cloneDeep(this.state.history);
+    for (let i = 0; i < history.length; i++) {
+      if (history[i].id === event.id) {
+        console.log('found match')
+        history[i] = _.cloneDeep(event);
+      }
+    }
+
+    this.saveHistory(history.sort((a, b) => a.timestamp - b.timestamp));
+  }
+
   handleFactorInputChange(factor) {
     let factors = _.cloneDeep(this.state.factors);
     for (const curr of factors) {
@@ -260,7 +272,8 @@ export default class Main extends React.Component {
             </SafeAreaView>
           </View>
         </TouchableWithoutFeedback>
-        <History history={this.state.history} />
+        <History history={this.state.history}
+                 onUpdateEvent={(event) => this.handleUpdateEvent(event)} />
       </Pages>
     );
   }
@@ -316,7 +329,8 @@ const styles = StyleSheet.create({
     height: '100%',
     display: 'flex',
     flexDirection: 'column',
-    justifyContent: 'center'
+    justifyContent: 'center',
+    paddingLeft: VARIABLES.GUTTER
   },
 
   right: {

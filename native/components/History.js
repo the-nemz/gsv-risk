@@ -1,7 +1,9 @@
 import React from 'react';
-import { StyleSheet, Dimensions, View, Text, FlatList, SafeAreaView } from 'react-native';
+import { StyleSheet, Dimensions, View, Text, FlatList, TouchableOpacity, SafeAreaView } from 'react-native';
 import { VictoryBar, VictoryChart, VictoryAxis, VictoryTheme } from "victory-native";
 import _ from 'lodash';
+
+import EventModal from './EventModal.js';
 
 import { calculateGsv, getGsvText, gsvToColor } from '../common/_util.js';
 import { VARIABLES } from '../common/style.js';
@@ -11,6 +13,23 @@ export default class History extends React.Component {
   constructor(props) {
     super(props);
     this.state = {};
+  }
+
+  handleOpenEventModal(event) {
+    this.setState({
+      eventOpened: event
+    });
+  }
+
+  handleCloseEventModal() {
+    this.setState({
+      eventOpened: null
+    });
+  }
+
+  handleUpdateEvent(event) {
+    this.handleCloseEventModal();
+    this.props.onUpdateEvent(event);
   }
 
   renderEventDetails(factors) {
@@ -47,7 +66,8 @@ export default class History extends React.Component {
     const gsv = calculateGsv(event.factors);
     const date = new Date(event.timestamp);
     return (
-      <View style={styles.event}>
+      <TouchableOpacity style={styles.event}
+                        onPress={() => this.handleOpenEventModal(event)}>
         <Text style={styles.eventDate}>
           {date.toLocaleDateString('en-US')}
         </Text>
@@ -55,7 +75,7 @@ export default class History extends React.Component {
         <Text style={[styles.eventGsv, {color: gsvToColor(gsv)}]}>
           {getGsvText(gsv)}
         </Text>
-      </View>
+      </TouchableOpacity>
     );
   }
 
@@ -134,22 +154,35 @@ export default class History extends React.Component {
   }
 
   render() {
+    const eventModal = this.state.eventOpened ? (
+                        <EventModal event={this.state.eventOpened}
+                                    onUpdateEvent={(event) => this.handleUpdateEvent(event)}
+                                    onCloseModal={() => this.handleCloseEventModal()} />
+                      ) : null;
+
     return (
-      <SafeAreaView style={styles.history}>
-        <View>
-          <Text style={styles.title}>
-            History
-          </Text>
-        </View>
-        <View style={styles.main}>
-          {this.renderHistory()}
-        </View>
-      </SafeAreaView>
+      <View style={styles.wrapper}>
+        {eventModal}
+        <SafeAreaView style={styles.history}>
+          <View>
+            <Text style={styles.title}>
+              History
+            </Text>
+          </View>
+          <View style={styles.main}>
+            {this.renderHistory()}
+          </View>
+        </SafeAreaView>
+      </View>
     );
   }
 }
 
 const styles = StyleSheet.create({
+  wrapper: {
+    flex: 1,
+  },
+
   history: {
     flex: 1,
     backgroundColor: VARIABLES.BLUE_DARK,

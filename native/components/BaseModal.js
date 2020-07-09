@@ -7,7 +7,7 @@ import Factor from './Factor.js';
 
 import { VARIABLES } from '../common/style.js';
 
-export default class Input extends React.Component {
+export default class BaseModal extends React.Component {
 
   constructor(props) {
     super(props);
