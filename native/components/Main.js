@@ -9,6 +9,7 @@ import _ from 'lodash';
 import BaseModal from './BaseModal.js';
 import Factor from './Factor.js';
 import History from './History.js';
+import Products from './Products.js';
 import Results from './Results.js';
 
 import { INITIAL_FACTORS, calculateGsv, getInputFromFactor } from '../common/_util.js';
@@ -274,6 +275,7 @@ export default class Main extends React.Component {
         </TouchableWithoutFeedback>
         <History history={this.state.history}
                  onUpdateEvent={(event) => this.handleUpdateEvent(event)} />
+        <Products />
       </Pages>
     );
   }
