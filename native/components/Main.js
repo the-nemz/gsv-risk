@@ -6,6 +6,7 @@ import AsyncStorage from '@react-native-community/async-storage';
 import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
 import _ from 'lodash';
 
+import Area from './Area.js';
 import BaseModal from './BaseModal.js';
 import Factor from './Factor.js';
 import History from './History.js';
@@ -274,6 +275,7 @@ export default class Main extends React.Component {
         </TouchableWithoutFeedback>
         <History history={this.state.history}
                  onUpdateEvent={(event) => this.handleUpdateEvent(event)} />
+        <Area />
       </Pages>
     );
   }
