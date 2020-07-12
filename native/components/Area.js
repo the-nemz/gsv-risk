@@ -4,7 +4,7 @@ import { Sae } from 'react-native-textinput-effects';
 import AsyncStorage from '@react-native-community/async-storage';
 import CountryPicker, { DARK_THEME } from 'react-native-country-picker-modal';
 import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
-import { VictoryLine, VictoryBar, VictoryChart, VictoryAxis, VictoryLabel, VictoryTheme } from 'victory-native';
+import { VictoryBar, VictoryChart, VictoryAxis, VictoryLabel, VictoryTheme } from 'victory-native';
 import _ from 'lodash';
 
 import { VARIABLES } from '../common/style.js';
@@ -24,13 +24,6 @@ export default class Area extends React.Component {
   }
 
   componentDidUpdate() {
-    // const reformat = ([date, num]) => {
-    //   return {
-    //     date: date,
-    //     num: num
-    //   }
-    // };
-
     const addRateOfChange = (entries) => {
       let prevCases = 0;
       let prevDeaths = 0;
@@ -46,29 +39,6 @@ export default class Area extends React.Component {
     if (this.state.area && !this.state.requestedData) {
       let area = _.cloneDeep(this.state.area);
       if (area.country.code === 'US' && area.region && area.subregion) {
-        // fetch(`${US_BASEURL}/historical/usacounties/${area.region.name.toLowerCase()}`)
-        //   .then(res => res.json())
-        //   .then(
-        //     (result) => {
-        //       let timeline = _.cloneDeep(this.state.timeline || {});
-        //       for (const entry of result) {
-        //         if (entry.county === area.subregion.code.toLowerCase()) {
-        //           timeline.cases = Object.entries(entry.timeline.cases).map(reformat);
-        //           timeline.deaths = Object.entries(entry.timeline.deaths).map(reformat);
-        //           break;
-        //         }
-        //       }
-        //       this.setState({
-        //         timeline: timeline
-        //       });
-        //     },
-        //     (error) => {
-        //       console.log(error)
-        //       reject();
-        //     }
-        //   );
-
-
         fetch(`${US_BASEURL}/nyt/counties/${area.subregion.code}`)
           .then(res => res.json())
           .then(
@@ -118,6 +88,36 @@ export default class Area extends React.Component {
             }
           );
       }
+
+      fetch(`${US_BASEURL}/historical/all?lastdays=all`)
+        .then(res => res.json())
+        .then(
+          (result) => {
+            let timeline = _.cloneDeep(this.state.timeline || {});
+            let entries = [];
+            for (const key in result.cases) {
+              const date = new Date(Date.parse(key));
+              let entry = {
+                date: `${date.getFullYear()}-${(date.getMonth() + 1 + '').padStart(2, '0')}-${(date.getDate() + '').padStart(2, '0')}`,
+                timestamp: date.valueOf(),
+                cases: result.cases[key],
+                deaths: result.deaths[key],
+              }
+              entries.push(entry);
+            }
+
+            timeline.world = addRateOfChange(entries.sort((a, b) => a.timestamp - b.timestamp));
+
+            this.setState({
+              timeline: timeline
+            });
+          },
+          (error) => {
+            console.log(error)
+            reject();
+          }
+        );
+
       this.setState({
         requestedData: true
       });
@@ -350,7 +350,7 @@ export default class Area extends React.Component {
           );
       }
     } else if (this.state.area && this.state.timeline) {
-      let subregionView, regionView, countryView;
+      let subregionView, regionView, countryView, worldView;
       if (this.state.timeline.subregion) {
         subregionView = (
           <View style={styles.areaWrap} key="subregion">
@@ -387,11 +387,24 @@ export default class Area extends React.Component {
         );
       }
 
+      if (this.state.timeline.world) {
+        worldView = (
+          <View style={styles.areaWrap} key="world">
+            <Text style={styles.areaName}>
+              World
+            </Text>
+            {this.renderChart(this.state.timeline.world, 'Daily Cases', 'newCases', VARIABLES.YELLOW)}
+            {this.renderChart(this.state.timeline.world, 'Daily Deaths', 'newDeaths', VARIABLES.ORANGE)}
+          </View>
+        );
+      }
+
       return (
         <ScrollView style={styles.charts}>
           {subregionView}
           {regionView}
           {countryView}
+          {worldView}
         </ScrollView>
       )
     }
@@ -434,7 +447,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 24,
     lineHeight: 32,
-    marginTop: VARIABLES.GUTTER_MINI,
+    marginBottom: VARIABLES.GUTTER_MINI,
     paddingHorizontal: VARIABLES.GUTTER,
     color: VARIABLES.WHITE
   },
