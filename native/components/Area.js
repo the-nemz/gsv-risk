@@ -1,10 +1,10 @@
 import React from 'react';
-import { Keyboard, TouchableWithoutFeedback, StyleSheet, Dimensions, View, Text, FlatList, TouchableOpacity, SafeAreaView } from 'react-native';
+import { Keyboard, TouchableWithoutFeedback, StyleSheet, Dimensions, View, Text, TouchableOpacity, SafeAreaView, ScrollView, FlatList } from 'react-native';
 import { Sae } from 'react-native-textinput-effects';
 import AsyncStorage from '@react-native-community/async-storage';
 import CountryPicker, { DARK_THEME } from 'react-native-country-picker-modal';
 import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
-import { VictoryLine, VictoryChart, VictoryAxis, VictoryLabel, VictoryTheme } from 'victory-native';
+import { VictoryLine, VictoryBar, VictoryChart, VictoryAxis, VictoryLabel, VictoryTheme } from 'victory-native';
 import _ from 'lodash';
 
 import { VARIABLES } from '../common/style.js';
@@ -24,28 +24,90 @@ export default class Area extends React.Component {
   }
 
   componentDidUpdate() {
-    const reformat = ([date, num]) => {
-      return {
-        date: date,
-        num: num
+    // const reformat = ([date, num]) => {
+    //   return {
+    //     date: date,
+    //     num: num
+    //   }
+    // };
+
+    const addRateOfChange = (entries) => {
+      let prevCases = 0;
+      let prevDeaths = 0;
+      for (let i = 0; i < entries.length; i++) {
+        entries[i].newCases = entries[i].cases - prevCases;
+        entries[i].newDeaths = entries[i].deaths - prevDeaths;
+        prevCases = entries[i].cases;
+        prevDeaths = entries[i].deaths;
       }
+      return entries;
     };
 
     if (this.state.area && !this.state.requestedData) {
       let area = _.cloneDeep(this.state.area);
       if (area.country.code === 'US' && area.region && area.subregion) {
-        fetch(`${US_BASEURL}/historical/usacounties/${area.region.name.toLowerCase()}`)
+        // fetch(`${US_BASEURL}/historical/usacounties/${area.region.name.toLowerCase()}`)
+        //   .then(res => res.json())
+        //   .then(
+        //     (result) => {
+        //       let timeline = _.cloneDeep(this.state.timeline || {});
+        //       for (const entry of result) {
+        //         if (entry.county === area.subregion.code.toLowerCase()) {
+        //           timeline.cases = Object.entries(entry.timeline.cases).map(reformat);
+        //           timeline.deaths = Object.entries(entry.timeline.deaths).map(reformat);
+        //           break;
+        //         }
+        //       }
+        //       this.setState({
+        //         timeline: timeline
+        //       });
+        //     },
+        //     (error) => {
+        //       console.log(error)
+        //       reject();
+        //     }
+        //   );
+
+
+        fetch(`${US_BASEURL}/nyt/counties/${area.subregion.code}`)
           .then(res => res.json())
           .then(
             (result) => {
-              let timeline = {};
-              for (const entry of result) {
-                if (entry.county === area.subregion.code.toLowerCase()) {
-                  timeline.cases = Object.entries(entry.timeline.cases).map(reformat);
-                  timeline.deaths = Object.entries(entry.timeline.deaths).map(reformat);
-                  break;
-                }
-              }
+              let timeline = _.cloneDeep(this.state.timeline || {});
+              let entries = result.filter((entry) => entry.state === area.region.name);
+              timeline.subregion = addRateOfChange(entries);
+              this.setState({
+                timeline: timeline
+              });
+            },
+            (error) => {
+              console.log(error)
+              reject();
+            }
+          );
+
+        fetch(`${US_BASEURL}/nyt/states/${area.region.name}`)
+          .then(res => res.json())
+          .then(
+            (result) => {
+              let timeline = _.cloneDeep(this.state.timeline || {});
+              timeline.region = addRateOfChange(result);
+              this.setState({
+                timeline: timeline
+              });
+            },
+            (error) => {
+              console.log(error)
+              reject();
+            }
+          );
+
+        fetch(`${US_BASEURL}/nyt/usa`)
+          .then(res => res.json())
+          .then(
+            (result) => {
+              let timeline = _.cloneDeep(this.state.timeline || {});
+              timeline.country = addRateOfChange(result);
               this.setState({
                 timeline: timeline
               });
@@ -174,6 +236,80 @@ export default class Area extends React.Component {
     }
   }
 
+  renderChart(data, label, field) {
+    let chartTheme = VictoryTheme.grayscale;
+    chartTheme.axis.style.axisLabel.fill = VARIABLES.BLUE_LIGHT;
+    chartTheme.axis.style.tickLabels.fill = VARIABLES.BLUE_LIGHT;
+
+    return (
+      <VictoryChart theme={chartTheme}
+                    height={Dimensions.get('window').height/4}>
+        <VictoryAxis
+          fixLabelOverlap
+          tickFormat={(dateString) => {
+            const date = new Date(Date.parse(dateString));
+            return date.toLocaleDateString('en-US');
+          }}
+          tickLabelComponent={<VictoryLabel angle={-20} dy={VARIABLES.GUTTER/4} />}
+          style={{
+            axis: {stroke: VARIABLES.BLUE_LIGHT},
+            // axisLabel: {padding: 32},
+            grid: {stroke: 'transparent'},
+            ticks: {
+              stroke: VARIABLES.BLUE_LIGHT,
+              size: 4
+            },
+            tickLabels: {fontSize: 12, padding: 4}
+          }} />
+        <VictoryAxis
+          dependentAxis
+          label={label}
+          tickFormat={(val) => {
+            const BILLION = 1000000000;
+            const TEN_MILLION = 10000000;
+            const MILLION = 1000000;
+            const TEN_THOUSAND = 10000;
+            const THOUSAND = 1000;
+            if (val >= BILLION) {
+              const sigFigs = (val / BILLION).toFixed(1);
+              return `${sigFigs}B`;
+            } else if (val >= MILLION) {
+              const sigFigs = (val / MILLION).toFixed(val >= TEN_MILLION ? 0 : 1);
+              return `${sigFigs}M`;
+            } else if (val >= THOUSAND) {
+              const sigFigs = (val / THOUSAND).toFixed(val >= TEN_THOUSAND ? 0 : 1);
+              return `${sigFigs}K`;
+            } else {
+              return `${val}`;
+            }
+          }}
+          axisLabel={{fill: 'white'}}
+          style={{
+            axis: {stroke: VARIABLES.BLUE_LIGHT},
+            axisLabel: {padding: 38},
+            grid: {stroke: 'transparent'},
+            ticks: {
+              stroke: VARIABLES.BLUE_LIGHT,
+              size: 4
+            },
+            tickLabels: {fontSize: 12, padding: 4}
+          }}
+        />
+        <VictoryBar data={data} x="date" y={field}
+                      alignment="end"
+                      style={{
+                        data: {
+                          fill: VARIABLES.WHITE
+                        }
+                      }}
+                      animate={{
+                        duration: 500,
+                        onLoad: { duration: 500 }
+                      }} />
+      </VictoryChart>
+    );
+  }
+
   renderMain() {
     if (this.state.option) {
       switch (this.state.option.level) {
@@ -214,59 +350,46 @@ export default class Area extends React.Component {
           );
       }
     } else if (this.state.area && this.state.timeline) {
-      let chartTheme = VictoryTheme.grayscale;
-      chartTheme.axis.style.axisLabel.fill = VARIABLES.BLUE_LIGHT;
-      chartTheme.axis.style.tickLabels.fill = VARIABLES.BLUE_LIGHT;
+      let subregionView, regionView, countryView;
+      if (this.state.timeline.subregion) {
+        subregionView = (
+          <View key="subregion">
+            <Text style={{color: VARIABLES.WHITE, textAlign: 'center'}}>
+              {this.state.area.subregion.name}
+            </Text>
+            {this.renderChart(this.state.timeline.subregion, 'New Cases', 'newCases')}
+          </View>
+        );
+      }
+
+      if (this.state.timeline.region) {
+        regionView = (
+          <View key="region">
+            <Text style={{color: VARIABLES.WHITE, textAlign: 'center'}}>
+              {this.state.area.region.name}
+            </Text>
+            {this.renderChart(this.state.timeline.region, 'New Cases', 'newCases')}
+          </View>
+        );
+      }
+
+      if (this.state.timeline.country) {
+        countryView = (
+          <View key="country">
+            <Text style={{color: VARIABLES.WHITE, textAlign: 'center'}}>
+              {this.state.area.country.name}
+            </Text>
+            {this.renderChart(this.state.timeline.country, 'New Cases', 'newCases')}
+          </View>
+        );
+      }
 
       return (
-        <View>
-          <Text style={{color: VARIABLES.WHITE, textAlign: 'center'}}>
-            {this.state.area.subregion.name}
-          </Text>
-          <VictoryChart theme={chartTheme} scale={{x: "date", y: "num"}}
-                        width={Dimensions.get('window').width - VARIABLES.GUTTER*2}
-                        height={Dimensions.get('window').height/4}>
-            <VictoryAxis
-              label="Date" fixLabelOverlap
-              tickLabelComponent={<VictoryLabel angle={-20} dy={VARIABLES.GUTTER/4} />}
-              style={{
-                axis: {stroke: VARIABLES.BLUE_LIGHT},
-                // axisLabel: {fontSize: 16, padding: 8},
-                grid: {stroke: 'transparent'},
-                ticks: {
-                  stroke: VARIABLES.BLUE_LIGHT,
-                  size: 4
-                },
-                tickLabels: {fontSize: 12, padding: 4}
-              }} />
-            <VictoryAxis
-              dependentAxis
-              label="Cases"
-              axisLabel={{fill: 'white'}}
-              style={{
-                axis: {stroke: VARIABLES.BLUE_LIGHT},
-                // axisLabel: {fontSize: 16, padding: 30},
-                grid: {stroke: 'transparent'},
-                ticks: {
-                  stroke: VARIABLES.BLUE_LIGHT,
-                  size: 4
-                },
-                tickLabels: {fontSize: 12, padding: 4}
-              }}
-            />
-            <VictoryLine data={this.state.timeline.cases} x="date" y="num"
-                         alignment="end"
-                         style={{
-                           data: {
-                             stroke: VARIABLES.WHITE
-                           }
-                         }}
-                         animate={{
-                           duration: 500,
-                           onLoad: { duration: 500 }
-                         }} />
-          </VictoryChart>
-        </View>
+        <ScrollView style={styles.charts}>
+          {subregionView}
+          {regionView}
+          {countryView}
+        </ScrollView>
       )
     }
   }
@@ -353,5 +476,9 @@ const styles = StyleSheet.create({
     marginLeft: 'auto',
     marginRight: 'auto',
     textAlign: 'center'
+  },
+
+  charts: {
+    flex: 1
   }
 });
