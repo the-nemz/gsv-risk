@@ -1,9 +1,10 @@
 import React from 'react';
-import { Keyboard, TouchableWithoutFeedback, StyleSheet, Dimensions, View, Text, TouchableOpacity, SafeAreaView, ScrollView, FlatList } from 'react-native';
+import { Keyboard, TouchableWithoutFeedback, StyleSheet, Dimensions, View, Text, TouchableOpacity, SafeAreaView, ScrollView, Animated, Easing } from 'react-native';
 import { Sae } from 'react-native-textinput-effects';
 import AsyncStorage from '@react-native-community/async-storage';
 import CountryPicker, { DARK_THEME } from 'react-native-country-picker-modal';
 import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
+import Select from 'react-native-picker-select';
 import { VictoryBar, VictoryChart, VictoryAxis, VictoryLabel, VictoryTheme } from 'victory-native';
 import _ from 'lodash';
 
@@ -11,16 +12,50 @@ import { VARIABLES } from '../common/style.js';
 
 const WORLD_BASEURL = 'https://api.covid19api.com';
 const US_BASEURL = 'https://disease.sh/v3/covid-19';
+const PLACEHOLDER = 'PLACEHOLDER';
+
+function toTitleCase(str) {
+  return str.replace(
+    /\b\w+/g,
+    function(s) {
+      return s.charAt(0).toUpperCase() + s.substr(1).toLowerCase();
+    }
+  );
+}
 
 export default class Area extends React.Component {
 
   constructor(props) {
     super(props);
-    this.state = {};
+    this.selectAnim = new Animated.Value(0);
+    this.state = {
+      // tempArea: {
+      //   country: {
+      //     code: 'US',
+      //     name: 'United States'
+      //   }
+      // },
+      // option: {
+      //   level: 'zip'
+      // }
+    };
   }
 
   componentDidMount() {
     this.getArea();
+    this.animateSelect();
+  }
+
+  animateSelect() {
+    this.selectAnim.setValue(0);
+    Animated.timing(
+      this.selectAnim,
+      {
+        toValue: 1,
+        duration: 300,
+        easing: Easing.linear
+      }
+    ).start();
   }
 
   componentDidUpdate() {
@@ -160,11 +195,51 @@ export default class Area extends React.Component {
     try {
       await AsyncStorage.setItem('area', JSON.stringify(area));
       this.setState({
-        area: area
+        area: area,
+        tempArea: null
       });
     } catch(e) {
       console.warn('Error saving area:', e)
     }
+  }
+
+  async loadRegions(countryCode) {
+    fetch(`${US_BASEURL}/historical/${countryCode}?lastdays=1`)
+      .then(res => res.json())
+      .then(
+        (result) => {
+          if (!result.province || result.province.length < 2) {
+            this.saveArea(this.state.tempArea);
+            this.setState({
+              tempArea: null,
+              option: null
+            });
+          }
+
+          const mL = 'mainland';
+          let provinces = result.province.sort((a, b) => {
+            if (a === mL) return -2;
+            if (b === mL) return 2;
+            return a > b ? 1 : -1;
+          });
+          let regions = provinces.map((prov) => {
+            // if (prov === mL) {
+            //   return `Mainland ${result.country}`;
+            // }
+            return toTitleCase(prov);
+          });
+          this.setState({
+            option: {
+              level: 'region',
+              choices: regions
+            }
+          });
+        },
+        (error) => {
+          console.log(error)
+          reject();
+        }
+      );
   }
 
   setCountry(country) {
@@ -179,7 +254,12 @@ export default class Area extends React.Component {
     }
 
     if (country.cca2 !== 'US') {
-      this.setState({area: tempArea});
+      // this.setState({area: tempArea});
+      this.loadRegions(country.cca2);
+      this.setState({
+        tempArea: tempArea,
+        option: null
+      });
     } else {
       this.setState({
         tempArea: tempArea,
@@ -232,6 +312,138 @@ export default class Area extends React.Component {
             console.log(error)
             reject();
           }
+        );
+    }
+  }
+
+  handleRegionChange(value) {
+    let area = _.cloneDeep(this.state.area || this.state.tempArea);
+    area.region = {
+      code: value,
+      name: value
+    }
+    this.setState({
+      option: null,
+      inputChanging: false
+    });
+    this.saveArea(area);
+  }
+
+  renderRegionPicker() {
+    let value = this.state.tempArea && this.state.tempArea.region ? this.state.tempArea.region.name : null;
+
+    const fontSize = this.selectAnim.interpolate({
+      inputRange: [0, 1],
+      outputRange: [20, 12]
+    });
+    let promptText = 'Region';
+    let prompt = (
+      <Animated.Text style={[styles.selectPrompt, {fontSize: fontSize}]}>
+        {promptText}
+      </Animated.Text>
+    );
+
+    const width = this.selectAnim.interpolate({
+      inputRange: [0, 1],
+      outputRange: ['0%', '100%']
+    });
+    let border = (
+      <Animated.View style={{
+        borderBottomColor: VARIABLES.BLUE_LIGHT,
+        borderBottomWidth: this.state.inputChanging || value !== null ? 2 : 0,
+        width: width,
+        position: 'absolute',
+        bottom: 0,
+        right: 0
+      }}>
+      </Animated.View>
+    );
+
+    let selectStyle = {
+      placeholder: {
+        fontSize: 20,
+        height: this.state.inputChanging ? 29 : 110,
+        color: !this.state.inputChanging && value === null ? VARIABLES.BLUE_LIGHT : 'transparent',
+        fontWeight: 'normal',
+        textAlign: 'center',
+        display: 'flex',
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center'
+      },
+
+      inputIOS: {
+        fontSize: 24,
+        color: VARIABLES.BLUE_LIGHT,
+        fontWeight: 'normal',
+        textAlign: 'center',
+      }
+    }
+
+    const viewStyle = this.state.inputChanging || value !== null ? [styles.selectWrap, styles.selectWrap_bordered] : [styles.selectWrap];
+
+    return (
+      <View style={viewStyle}>
+        {this.state.inputChanging || value !== null ? prompt : null}
+        <Select style={selectStyle} value={value} items={this.state.option.choices.map((item) => { return {label: item, value: item} })}
+                onOpen={() => {
+                  this.setState({ inputChanging: true });
+                  if (value === null) {
+                    this.animateSelect();
+                  }
+                }}
+                onClose={() => {
+                  this.setState({ inputChanging: false })
+                }}
+                onValueChange={(value) => this.handleRegionChange(value)}
+                placeholder={!this.state.inputChanging && value === null ? {label: promptText, value: PLACEHOLDER} : {label: promptText, value: PLACEHOLDER}} />
+        {border}
+      </View>
+    );
+  }
+
+  renderInput() {
+    if (!this.state.option) {
+      return;
+    }
+
+    switch (this.state.option.level) {
+      case 'country':
+        let theme = DARK_THEME;
+        theme.backgroundColor = VARIABLES.BLUE_DARK;
+        theme.primaryColorVariant = VARIABLES.BLUE_MEDIUM;
+        return (
+          <View style={styles.countryPicker}>
+            <CountryPicker theme={theme} countryCodes={this.state.option.items}
+                           onSelect={(country) => this.setCountry(country)} />
+          </View>
+        );
+      case 'region':
+        return this.renderRegionPicker();
+      case 'zip':
+        const input = this.state.inputChanging ? this.state.input : null;
+        const inputValue = input || input === 0 ? input + '' : '';
+        return (
+          <View style={styles.zip}>
+            <Sae
+              label={'Zip Code'}
+              value={inputValue}
+              iconClass={FontAwesomeIcon}
+              iconName={null}
+              iconColor={VARIABLES.BLUE_LIGHT}
+              inputPadding={16}
+              labelHeight={24}
+              borderHeight={2}
+              autoCapitalize={'none'}
+              autoCorrect={false}
+              keyboardType={'numeric'}
+              style={styles.inputWrap}
+              labelStyle={styles.prompt}
+              inputStyle={styles.input}
+              onChange={(e) => this.handleZipChange(e.nativeEvent.text)}
+              onBlur={(e) => this.handleZipBlur(e.nativeEvent.text)}
+            />
+          </View>
         );
     }
   }
@@ -311,44 +523,35 @@ export default class Area extends React.Component {
   }
 
   renderMain() {
-    if (this.state.option) {
-      switch (this.state.option.level) {
-        case 'country':
-          let theme = DARK_THEME;
-          theme.backgroundColor = VARIABLES.BLUE_DARK;
-          theme.primaryColorVariant = VARIABLES.BLUE_MEDIUM;
-          return (
-            <View>
-              <CountryPicker theme={theme} countryCodes={this.state.option.items}
-                             onSelect={(country) => this.setCountry(country)} />
-            </View>
-          );
-        case 'zip':
-          const input = this.state.inputChanging ? this.state.input : null;
-          const inputValue = input || input === 0 ? input + '' : '';
-          return (
-            <View style={styles.zip}>
-              <Sae
-                label={'Zip Code'}
-                value={inputValue}
-                iconClass={FontAwesomeIcon}
-                iconName={null}
-                iconColor={VARIABLES.BLUE_LIGHT}
-                inputPadding={16}
-                labelHeight={24}
-                borderHeight={2}
-                autoCapitalize={'none'}
-                autoCorrect={false}
-                keyboardType={'numeric'}
-                style={styles.inputWrap}
-                labelStyle={styles.prompt}
-                inputStyle={styles.input}
-                onChange={(e) => this.handleZipChange(e.nativeEvent.text)}
-                onBlur={(e) => this.handleZipBlur(e.nativeEvent.text)}
-              />
-            </View>
-          );
+    if (this.state.option || this.state.tempArea) {
+      let countryText, regionText;
+      if (this.state.tempArea && this.state.tempArea.country) {
+        countryText = (
+          <Text style={styles.drill}>
+            {this.state.tempArea.country.name}
+          </Text>
+        );
       }
+      if (this.state.tempArea && this.state.tempArea.region) {
+        regionText = (
+          <Text style={styles.drill}>
+            {this.state.tempArea.region.name}
+          </Text>
+        );
+      }
+      let drilldown = countryText || regionText ? (
+          <View style={styles.drilldown}>
+            {countryText}
+            {regionText}
+          </View>
+        ) : null;
+
+      return (
+        <View>
+          {drilldown}
+          {this.renderInput()}
+        </View>
+      );
     } else if (this.state.area && this.state.timeline) {
       let subregionView, regionView, countryView, worldView;
       if (this.state.timeline.subregion) {
@@ -456,14 +659,74 @@ const styles = StyleSheet.create({
     width: '100%',
     flexGrow: 1,
     paddingHorizontal: VARIABLES.GUTTER,
-    paddingBottom: VARIABLES.GUTTER*3
+    paddingBottom: VARIABLES.GUTTER*3,
+    // display: 'flex',
+    // flexDirection: 'column',
+    // alignItems: 'center'
+  },
+
+  drilldown: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center'
+  },
+
+  drill: {
+    fontSize: 20,
+    lineHeight: 30,
+    color: VARIABLES.WHITE
+  },
+
+  countryPicker: {
+    width: '100%',
+    marginTop: VARIABLES.GUTTER,
+    // textAlign: 'center'
+    // flex: 1,
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    // alignItems: 'flex-start'
+  },
+
+  selectWrap: {
+    display: 'flex',
+    flexDirection: 'column'
+  },
+
+  selectPrompt: {
+    color: VARIABLES.BLUE_LIGHT,
+    fontWeight: 'normal',
+    textAlign: 'center'
+  },
+
+  select: {
+    color: 'red'
+  },
+
+  selectIconWrap: {
+    position: 'absolute',
+    right: 0,
+    bottom: 0,
+    width: 22
+  },
+
+  zipWrap: {
+    display: 'flex',
+    flex: 1,
+    alignItems: 'center'
   },
 
   zip: {
     width: '100%',
-    color: VARIABLES.BLUE_LIGHT,
-    marginBottom: 100,
-    paddingBottom: 100
+    // color: VARIABLES.BLUE_LIGHT,
+    // marginBottom: 100,
+    // paddingBottom: 100,
+    // flex: 1,
+    // display: 'flex',
+    // justifyContent: 'center',
+    // alignItems: 'center'
+
+    // alignSelf: 'center'
   },
 
   inputWrap: {
@@ -473,8 +736,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     overflow: 'visible',
-    marginTop: VARIABLES.GUTTER,
-    marginBottom: VARIABLES.GUTTER
+    // marginTop: VARIABLES.GUTTER,
+    // marginBottom: VARIABLES.GUTTER,
+
+    // alignSelf: 'center'
   },
 
   prompt: {
