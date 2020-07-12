@@ -28,17 +28,7 @@ export default class Area extends React.Component {
   constructor(props) {
     super(props);
     this.selectAnim = new Animated.Value(0);
-    this.state = {
-      // tempArea: {
-      //   country: {
-      //     code: 'US',
-      //     name: 'United States'
-      //   }
-      // },
-      // option: {
-      //   level: 'zip'
-      // }
-    };
+    this.state = {};
   }
 
   componentDidMount() {
@@ -113,6 +103,71 @@ export default class Area extends React.Component {
             (result) => {
               let timeline = _.cloneDeep(this.state.timeline || {});
               timeline.country = addRateOfChange(result);
+              this.setState({
+                timeline: timeline
+              });
+            },
+            (error) => {
+              console.log(error)
+              reject();
+            }
+          );
+      } else {
+        if (area.region) {
+          fetch(`${US_BASEURL}/historical/${area.country.code}/${area.region.code}?lastdays=all`)
+            .then(res => res.json())
+            .then(
+              (result) => {
+                console.log(result);
+                if (!result.timeline) return;
+
+                let timeline = _.cloneDeep(this.state.timeline || {});
+                let entries = [];
+                for (const key in result.timeline.cases) {
+                  const date = new Date(Date.parse(key));
+                  let entry = {
+                    date: `${date.getFullYear()}-${(date.getMonth() + 1 + '').padStart(2, '0')}-${(date.getDate() + '').padStart(2, '0')}`,
+                    timestamp: date.valueOf(),
+                    cases: result.timeline.cases[key],
+                    deaths: result.timeline.deaths[key],
+                  }
+                  entries.push(entry);
+                }
+
+                timeline.region = addRateOfChange(entries.sort((a, b) => a.timestamp - b.timestamp));
+
+                this.setState({
+                  timeline: timeline
+                });
+              },
+              (error) => {
+                console.log(error)
+                reject();
+              }
+            );
+        }
+
+        fetch(`${US_BASEURL}/historical/${area.country.code}?lastdays=all`)
+          .then(res => res.json())
+          .then(
+            (result) => {
+              if (!result.timeline) return;
+
+              let timeline = _.cloneDeep(this.state.timeline || {});
+              let entries = [];
+              for (const key in result.timeline.cases) {
+                const date = new Date(Date.parse(key));
+                let entry = {
+                  date: `${date.getFullYear()}-${(date.getMonth() + 1 + '').padStart(2, '0')}-${(date.getDate() + '').padStart(2, '0')}`,
+                  timestamp: date.valueOf(),
+                  cases: result.timeline.cases[key],
+                  deaths: result.timeline.deaths[key],
+                }
+                entries.push(entry);
+              }
+
+              timeline.country = addRateOfChange(entries.sort((a, b) => a.timestamp - b.timestamp));
+
               this.setState({
                 timeline: timeline
               });
@@ -214,6 +269,7 @@ export default class Area extends React.Component {
               tempArea: null,
               option: null
             });
+            return;
           }
 
           const mL = 'mainland';
@@ -223,10 +279,16 @@ export default class Area extends React.Component {
             return a > b ? 1 : -1;
           });
           let regions = provinces.map((prov) => {
-            // if (prov === mL) {
-            //   return `Mainland ${result.country}`;
-            // }
-            return toTitleCase(prov);
+            if (prov === mL) {
+              return {
+                name: `Mainland ${result.country}`,
+                code: prov
+              };
+            }
+            return {
+              name: toTitleCase(prov),
+              code: prov
+            };
           });
           this.setState({
             option: {
@@ -318,9 +380,11 @@ export default class Area extends React.Component {
 
   handleRegionChange(value) {
     let area = _.cloneDeep(this.state.area || this.state.tempArea);
-    area.region = {
-      code: value,
-      name: value
+    for (const choice of this.state.option.choices) {
+      if (value === choice.code) {
+        area.region = choice;
+        break;
+      }
     }
     this.setState({
       option: null,
@@ -385,7 +449,7 @@ export default class Area extends React.Component {
     return (
       <View style={viewStyle}>
         {this.state.inputChanging || value !== null ? prompt : null}
-        <Select style={selectStyle} value={value} items={this.state.option.choices.map((item) => { return {label: item, value: item} })}
+        <Select style={selectStyle} value={value} items={this.state.option.choices.map((item) => { return {label: item.name, value: item.code} })}
                 onOpen={() => {
                   this.setState({ inputChanging: true });
                   if (value === null) {
