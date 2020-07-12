@@ -236,7 +236,7 @@ export default class Area extends React.Component {
     }
   }
 
-  renderChart(data, label, field) {
+  renderChart(data, label, field, color) {
     let chartTheme = VictoryTheme.grayscale;
     chartTheme.axis.style.axisLabel.fill = VARIABLES.BLUE_LIGHT;
     chartTheme.axis.style.tickLabels.fill = VARIABLES.BLUE_LIGHT;
@@ -299,7 +299,7 @@ export default class Area extends React.Component {
                       alignment="end"
                       style={{
                         data: {
-                          fill: VARIABLES.WHITE
+                          fill: color
                         }
                       }}
                       animate={{
@@ -353,33 +353,36 @@ export default class Area extends React.Component {
       let subregionView, regionView, countryView;
       if (this.state.timeline.subregion) {
         subregionView = (
-          <View key="subregion">
-            <Text style={{color: VARIABLES.WHITE, textAlign: 'center'}}>
+          <View style={styles.areaWrap} key="subregion">
+            <Text style={styles.areaName}>
               {this.state.area.subregion.name}
             </Text>
-            {this.renderChart(this.state.timeline.subregion, 'New Cases', 'newCases')}
+            {this.renderChart(this.state.timeline.subregion, 'Daily Cases', 'newCases', VARIABLES.YELLOW)}
+            {this.renderChart(this.state.timeline.subregion, 'Daily Deaths', 'newDeaths', VARIABLES.ORANGE)}
           </View>
         );
       }
 
       if (this.state.timeline.region) {
         regionView = (
-          <View key="region">
-            <Text style={{color: VARIABLES.WHITE, textAlign: 'center'}}>
+          <View style={styles.areaWrap} key="region">
+            <Text style={styles.areaName}>
               {this.state.area.region.name}
             </Text>
-            {this.renderChart(this.state.timeline.region, 'New Cases', 'newCases')}
+            {this.renderChart(this.state.timeline.region, 'Daily Cases', 'newCases', VARIABLES.YELLOW)}
+            {this.renderChart(this.state.timeline.region, 'Daily Deaths', 'newDeaths', VARIABLES.ORANGE)}
           </View>
         );
       }
 
       if (this.state.timeline.country) {
         countryView = (
-          <View key="country">
-            <Text style={{color: VARIABLES.WHITE, textAlign: 'center'}}>
+          <View style={styles.areaWrap} key="country">
+            <Text style={styles.areaName}>
               {this.state.area.country.name}
             </Text>
-            {this.renderChart(this.state.timeline.country, 'New Cases', 'newCases')}
+            {this.renderChart(this.state.timeline.country, 'Daily Cases', 'newCases', VARIABLES.YELLOW)}
+            {this.renderChart(this.state.timeline.country, 'Daily Deaths', 'newDeaths', VARIABLES.ORANGE)}
           </View>
         );
       }
@@ -480,5 +483,18 @@ const styles = StyleSheet.create({
 
   charts: {
     flex: 1
+  },
+
+  areaWrap: {
+    marginBottom: VARIABLES.GUTTER,
+    borderBottomColor: VARIABLES.BLUE_MEDIUM,
+    borderBottomWidth: 1
+  },
+
+  areaName: {
+    fontSize: 20,
+    lineHeight: 30,
+    color: VARIABLES.WHITE,
+    textAlign: 'center'
   }
 });

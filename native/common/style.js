@@ -11,4 +11,7 @@ export const VARIABLES = {
   BLUE_MEDIUM: '#27496d',
   BLUE_LIGHT: '#9bcefa',
   TEAL: '#00909e',
+
+  YELLOW: '#dbd300',
+  ORANGE: '#db5300'
 }
