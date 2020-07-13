@@ -63,39 +63,43 @@ export default class Area extends React.Component {
 
     if (this.state.area && !this.state.requestedData) {
       let area = _.cloneDeep(this.state.area);
-      if (area.country.code === 'US' && area.region && area.subregion) {
-        fetch(`${US_BASEURL}/nyt/counties/${area.subregion.code}`)
-          .then(res => res.json())
-          .then(
-            (result) => {
-              let timeline = _.cloneDeep(this.state.timeline || {});
-              let entries = result.filter((entry) => entry.state === area.region.name);
-              timeline.subregion = addRateOfChange(entries);
-              this.setState({
-                timeline: timeline
-              });
-            },
-            (error) => {
-              console.log(error)
-              reject();
-            }
-          );
+      if (area.country.code === 'US') {
+        if (area.subregion) {
+          fetch(`${US_BASEURL}/nyt/counties/${area.subregion.code}`)
+            .then(res => res.json())
+            .then(
+              (result) => {
+                let timeline = _.cloneDeep(this.state.timeline || {});
+                let entries = result.filter((entry) => entry.state === area.region.name);
+                timeline.subregion = addRateOfChange(entries);
+                this.setState({
+                  timeline: timeline
+                });
+              },
+              (error) => {
+                console.log(error)
+                reject();
+              }
+            );
+        }
 
-        fetch(`${US_BASEURL}/nyt/states/${area.region.name}`)
-          .then(res => res.json())
-          .then(
-            (result) => {
-              let timeline = _.cloneDeep(this.state.timeline || {});
-              timeline.region = addRateOfChange(result);
-              this.setState({
-                timeline: timeline
-              });
-            },
-            (error) => {
-              console.log(error)
-              reject();
-            }
-          );
+        if (area.region) {
+          fetch(`${US_BASEURL}/nyt/states/${area.region.name}`)
+            .then(res => res.json())
+            .then(
+              (result) => {
+                let timeline = _.cloneDeep(this.state.timeline || {});
+                timeline.region = addRateOfChange(result);
+                this.setState({
+                  timeline: timeline
+                });
+              },
+              (error) => {
+                console.log(error)
+                reject();
+              }
+            );
+        }
 
         fetch(`${US_BASEURL}/nyt/usa`)
           .then(res => res.json())
@@ -316,7 +320,6 @@ export default class Area extends React.Component {
     }
 
     if (country.cca2 !== 'US') {
-      // this.setState({area: tempArea});
       this.loadRegions(country.cca2);
       this.setState({
         tempArea: tempArea,
@@ -359,7 +362,7 @@ export default class Area extends React.Component {
                 }
               } else if ((component.types || []).includes('administrative_area_level_2')) {
                 area.subregion = {
-                  code: component.short_name.replace(' County', ''),
+                  code: component.short_name.replace(' County', '').replace(' Parish', ''),
                   name: component.long_name
                 }
               }
@@ -529,7 +532,6 @@ export default class Area extends React.Component {
           tickLabelComponent={<VictoryLabel angle={-20} dy={VARIABLES.GUTTER/4} />}
           style={{
             axis: {stroke: VARIABLES.BLUE_LIGHT},
-            // axisLabel: {padding: 32},
             grid: {stroke: 'transparent'},
             ticks: {
               stroke: VARIABLES.BLUE_LIGHT,
@@ -723,10 +725,7 @@ const styles = StyleSheet.create({
     width: '100%',
     flexGrow: 1,
     paddingHorizontal: VARIABLES.GUTTER,
-    paddingBottom: VARIABLES.GUTTER*3,
-    // display: 'flex',
-    // flexDirection: 'column',
-    // alignItems: 'center'
+    paddingBottom: VARIABLES.GUTTER*3
   },
 
   drilldown: {
@@ -744,12 +743,9 @@ const styles = StyleSheet.create({
   countryPicker: {
     width: '100%',
     marginTop: VARIABLES.GUTTER,
-    // textAlign: 'center'
-    // flex: 1,
     display: 'flex',
     flexDirection: 'row',
-    justifyContent: 'center',
-    // alignItems: 'flex-start'
+    justifyContent: 'center'
   },
 
   selectWrap: {
@@ -781,16 +777,7 @@ const styles = StyleSheet.create({
   },
 
   zip: {
-    width: '100%',
-    // color: VARIABLES.BLUE_LIGHT,
-    // marginBottom: 100,
-    // paddingBottom: 100,
-    // flex: 1,
-    // display: 'flex',
-    // justifyContent: 'center',
-    // alignItems: 'center'
-
-    // alignSelf: 'center'
+    width: '100%'
   },
 
   inputWrap: {
@@ -799,11 +786,7 @@ const styles = StyleSheet.create({
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    overflow: 'visible',
-    // marginTop: VARIABLES.GUTTER,
-    // marginBottom: VARIABLES.GUTTER,
-
-    // alignSelf: 'center'
+    overflow: 'visible'
   },
 
   prompt: {
