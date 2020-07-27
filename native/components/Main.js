@@ -1,17 +1,13 @@
 import React from 'react';
-import { Keyboard, TouchableWithoutFeedback, StyleSheet, SafeAreaView, View, Text } from 'react-native';
-import Button from 'react-native-button';
 import { Pages } from 'react-native-pages';
 import AsyncStorage from '@react-native-community/async-storage';
-import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
 import _ from 'lodash';
 
-import BaseModal from './BaseModal.js';
-import Factor from './Factor.js';
+import Area from './Area.js';
+import Calculator from './Calculator.js';
 import History from './History.js';
-import Results from './Results.js';
 
-import { INITIAL_FACTORS, calculateGsv, getInputFromFactor } from '../common/_util.js';
+import { INITIAL_FACTORS } from '../common/_util.js';
 import { VARIABLES } from '../common/style.js';
 
 export default class Main extends React.Component {
@@ -27,9 +23,7 @@ export default class Main extends React.Component {
     }
 
     this.state = {
-      factors: INITIAL_FACTORS,
-      base: base,
-      baseModalOpen: false
+      base: base
     };
   }
 
@@ -105,7 +99,7 @@ export default class Main extends React.Component {
     }
   }
 
-  async saveEvent() {
+  async saveEvent(factors) {
     if (!this.state.nextEventId) {
       await this.getNextEventId();
     }
@@ -116,7 +110,7 @@ export default class Main extends React.Component {
     let newEvent = {
       id: this.state.nextEventId,
       timestamp: Date.now(),
-      factors: _.cloneDeep(this.state.factors)
+      factors: _.cloneDeep(factors)
     }
 
     try {
@@ -131,10 +125,10 @@ export default class Main extends React.Component {
 
   async saveHistory(history) {
     try {
-      await AsyncStorage.setItem('history', JSON.stringify(history));
       this.setState({
         history: history
       });
+      await AsyncStorage.setItem('history', JSON.stringify(history));
     } catch(e) {
       console.warn('Error saving history:', e)
     }
@@ -142,10 +136,10 @@ export default class Main extends React.Component {
 
   async saveBase(base) {
     try {
-      await AsyncStorage.setItem('base', JSON.stringify(base));
       this.setState({
         base: base
       });
+      await AsyncStorage.setItem('base', JSON.stringify(base));
     } catch(e) {
       console.warn('Error saving base:', e)
     }
@@ -155,7 +149,6 @@ export default class Main extends React.Component {
     let history = _.cloneDeep(this.state.history);
     for (let i = 0; i < history.length; i++) {
       if (history[i].id === event.id) {
-        console.log('found match')
         history[i] = _.cloneDeep(event);
       }
     }
@@ -163,34 +156,7 @@ export default class Main extends React.Component {
     this.saveHistory(history.sort((a, b) => a.timestamp - b.timestamp));
   }
 
-  handleFactorInputChange(factor) {
-    let factors = _.cloneDeep(this.state.factors);
-    for (const curr of factors) {
-      if (curr.id === factor.id) {
-        const input = getInputFromFactor(factor);
-        curr.input = input;
-        if (factor.overrideBase && (input || input === 0)) {
-          curr.baseValue = input
-        }
-
-        break;
-      }
-    }
-
-    this.setState({
-      factors: factors
-    })
-  }
-
-  handleFactorBaseChange(factor) {
-    let base = _.cloneDeep(this.state.base);
-    const baseInput = getInputFromFactor(factor, true);
-    if (baseInput || baseInput === 0) {
-      base[factor.id] = getInputFromFactor(factor, true);
-    } else {
-      return;
-    }
-
+  handleFactorBaseChange(factor, base) {
     const updateFactors = (factors) => {
       for (const curr of factors) {
         if (curr.id === factor.id && factor.customizeBase) {
@@ -201,147 +167,25 @@ export default class Main extends React.Component {
       }
     }
 
-    let factors = _.cloneDeep(this.state.factors);
-    updateFactors(factors);
-
     let history = _.cloneDeep(this.state.history);
     for (const event of history) {
       updateFactors(event.factors);
     }
 
-    this.setState({
-      factors: factors
-    });
-
-    this.saveHistory(history);
     this.saveBase(base);
-  }
-
-  handleToggleBaseModal() {
-    this.setState({
-      baseModalOpen: !this.state.baseModalOpen
-    })
-  }
-
-  renderFactors() {
-    let factors = [];
-    for (const factor of this.state.factors) {
-      factors.push(
-        <Factor factor={factor} key={factor.id}
-                onFactorInputChange={(factor) => this.handleFactorInputChange(factor)} />
-      );
-      if (factor.input === null || factor.input === undefined) {
-        break;
-      }
-    }
-    return factors;
+    this.saveHistory(history);
   }
 
   render() {
-    const baseModal = (
-      <BaseModal factors={this.state.factors} base={this.state.base}
-                 onCloseModal={() => this.handleToggleBaseModal()}
-                 onFactorBaseChange={(factor) => this.handleFactorBaseChange(factor)} />
-    );
-
     return (
       <Pages>
-        <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-          <View style={styles.wrapper}>
-            {this.state.baseModalOpen ? baseModal : null}
-            <SafeAreaView style={styles.main}>
-              <Button containerStyle={styles.baseModalButton}
-                      onPress={() => this.handleToggleBaseModal()}>
-                <FontAwesomeIcon style={styles.baseModalButtonIcon} name={'sliders'} size={28} color={VARIABLES.BLUE_DARK} />
-              </Button>
-
-              <View style={styles.container}>
-                <View style={styles.left}>
-                  {this.renderFactors()}
-                </View>
-
-                <View style={styles.right}>
-                  <Results gsv={calculateGsv(this.state.factors)} />
-                </View>
-              </View>
-
-              <Button style={styles.save}
-                      onPress={() => this.saveEvent()}>
-                Save
-              </Button>
-            </SafeAreaView>
-          </View>
-        </TouchableWithoutFeedback>
+        <Calculator base={this.state.base}
+                    onSaveEvent={(factors) => this.saveEvent(factors)}
+                    onFactorBaseChange={(factor, base) => this.handleFactorBaseChange(factor, base)} />
         <History history={this.state.history}
                  onUpdateEvent={(event) => this.handleUpdateEvent(event)} />
+        <Area />
       </Pages>
     );
   }
 }
-
-const styles = StyleSheet.create({
-  wrapper: {
-    flex: 1
-  },
-
-  main: {
-    flex: 1,
-    position: 'relative',
-    backgroundColor: VARIABLES.BLUE_DARK,
-    padding: VARIABLES.GUTTER_MINI
-  },
-
-  baseModalButton: {
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'flex-end',
-    right: VARIABLES.GUTTER,
-    top: VARIABLES.GUTTER
-  },
-
-  baseModalButtonIcon: {
-    backgroundColor: VARIABLES.WHITE,
-    paddingVertical: VARIABLES.GUTTER_MINI,
-    paddingHorizontal: VARIABLES.GUTTER_MINI + 2
-  },
-
-  save: {
-    backgroundColor: VARIABLES.WHITE,
-    color: VARIABLES.BLUE_DARK,
-    width: 100,
-    position: 'absolute',
-    bottom: VARIABLES.GUTTER*4,
-    right: '50%',
-    transform: [{translateX: 50}],
-    padding: VARIABLES.GUTTER_MINI
-  },
-
-  container: {
-    flex: 1,
-    display: 'flex',
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-
-  left: {
-    flex: 2,
-    height: '100%',
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'center',
-    paddingLeft: VARIABLES.GUTTER
-  },
-
-  right: {
-    flex: 1,
-    height: '100%',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center'
-  },
-
-  gsv: {
-    color: VARIABLES.WHITE
-  }
-});

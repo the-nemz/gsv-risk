@@ -48,24 +48,11 @@ export default class Factor extends React.Component {
     ).start();
   }
 
-  handleInputFocus(value) {
-    this.setState({
-      input: value,
-      inputChanging: true
-    });
-  }
-
   handleTextChange(value) {
     this.setState({
       input: value,
       inputChanging: true
     });
-  }
-
-  handleKeyPress(e, value) {
-    if (e.key === 'Enter') {
-      this.handleTextBlur(value);
-    }
   }
 
   handleTextBlur(value) {

@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet, Dimensions, View, Text, FlatList, TouchableOpacity, SafeAreaView } from 'react-native';
-import { VictoryBar, VictoryChart, VictoryAxis, VictoryTheme } from "victory-native";
+import { VictoryBar, VictoryChart, VictoryAxis, VictoryTheme } from 'victory-native';
 import _ from 'lodash';
 
 import EventModal from './EventModal.js';
