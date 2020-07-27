@@ -1,5 +1,5 @@
 import React from 'react';
-import { Keyboard, TouchableWithoutFeedback, StyleSheet, Dimensions, View, Text, TouchableOpacity, SafeAreaView, ScrollView, Animated, Easing } from 'react-native';
+import { Keyboard, TouchableWithoutFeedback, StyleSheet, Dimensions, View, Text, SafeAreaView, ScrollView, Animated, Easing } from 'react-native';
 import { Sae } from 'react-native-textinput-effects';
 import AsyncStorage from '@react-native-community/async-storage';
 import CountryPicker, { DARK_THEME } from 'react-native-country-picker-modal';
@@ -60,6 +60,8 @@ export default class Area extends React.Component {
       }
       return entries;
     };
+
+    const getDateString = (date) => `${date.getFullYear()}-${(date.getMonth() + 1 + '').padStart(2, '0')}-${(date.getDate() + '').padStart(2, '0')}`;
 
     if (this.state.area && !this.state.requestedData) {
       let area = _.cloneDeep(this.state.area);
@@ -127,7 +129,7 @@ export default class Area extends React.Component {
                   for (const key in result.timeline.cases) {
                     const date = new Date(Date.parse(key));
                     let entry = {
-                      date: `${date.getFullYear()}-${(date.getMonth() + 1 + '').padStart(2, '0')}-${(date.getDate() + '').padStart(2, '0')}`,
+                      date: getDateString(date),
                       timestamp: date.valueOf(),
                       cases: result.timeline.cases[key],
                       deaths: result.timeline.deaths[key],
@@ -160,7 +162,7 @@ export default class Area extends React.Component {
                 for (const key in result.timeline.cases) {
                   const date = new Date(Date.parse(key));
                   let entry = {
-                    date: `${date.getFullYear()}-${(date.getMonth() + 1 + '').padStart(2, '0')}-${(date.getDate() + '').padStart(2, '0')}`,
+                    date: getDateString(date),
                     timestamp: date.valueOf(),
                     cases: result.timeline.cases[key],
                     deaths: result.timeline.deaths[key],
@@ -190,7 +192,7 @@ export default class Area extends React.Component {
             for (const key in result.cases) {
               const date = new Date(Date.parse(key));
               let entry = {
-                date: `${date.getFullYear()}-${(date.getMonth() + 1 + '').padStart(2, '0')}-${(date.getDate() + '').padStart(2, '0')}`,
+                date: getDateString(date),
                 timestamp: date.valueOf(),
                 cases: result.cases[key],
                 deaths: result.deaths[key],
@@ -640,8 +642,7 @@ export default class Area extends React.Component {
             <Text style={styles.areaName}>
               {this.state.area.subregion.name}
             </Text>
-            {this.renderChart(this.state.timeline.subregion, 'Daily Cases', 'newCases', VARIABLES.YELLOW)}
-            {this.renderChart(this.state.timeline.subregion, 'Daily Deaths', 'newDeaths', VARIABLES.ORANGE)}
+            {this.renderCharts('subregion')}
           </View>
         );
       }
@@ -652,8 +653,7 @@ export default class Area extends React.Component {
             <Text style={styles.areaName}>
               {this.state.area.region.name}
             </Text>
-            {this.renderChart(this.state.timeline.region, 'Daily Cases', 'newCases', VARIABLES.YELLOW)}
-            {this.renderChart(this.state.timeline.region, 'Daily Deaths', 'newDeaths', VARIABLES.ORANGE)}
+            {this.renderCharts('region')}
           </View>
         );
       }
@@ -675,8 +675,7 @@ export default class Area extends React.Component {
             <Text style={styles.areaName}>
               World
             </Text>
-            {this.renderChart(this.state.timeline.world, 'Daily Cases', 'newCases', VARIABLES.YELLOW)}
-            {this.renderChart(this.state.timeline.world, 'Daily Deaths', 'newDeaths', VARIABLES.ORANGE)}
+            {this.renderCharts('world')}
           </View>
         );
       }
