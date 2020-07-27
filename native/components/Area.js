@@ -77,8 +77,7 @@ export default class Area extends React.Component {
                 });
               },
               (error) => {
-                console.log(error)
-                reject();
+                console.log(error);
               }
             );
         }
@@ -95,8 +94,7 @@ export default class Area extends React.Component {
                 });
               },
               (error) => {
-                console.log(error)
-                reject();
+                console.log(error);
               }
             );
         }
@@ -112,8 +110,7 @@ export default class Area extends React.Component {
               });
             },
             (error) => {
-              console.log(error)
-              reject();
+              console.log(error);
             }
           );
       } else {
@@ -145,8 +142,7 @@ export default class Area extends React.Component {
                 });
               },
               (error) => {
-                console.log(error)
-                reject();
+                console.log(error);
               }
             );
         }
@@ -177,8 +173,7 @@ export default class Area extends React.Component {
               });
             },
             (error) => {
-              console.log(error)
-              reject();
+              console.log(error);
             }
           );
       }
@@ -207,8 +202,7 @@ export default class Area extends React.Component {
             });
           },
           (error) => {
-            console.log(error)
-            reject();
+            console.log(error);
           }
         );
 
@@ -239,8 +233,7 @@ export default class Area extends React.Component {
               });
             },
             (error) => {
-              console.log(error)
-              reject();
+              console.log(error);
             }
           );
       }
@@ -302,8 +295,7 @@ export default class Area extends React.Component {
           });
         },
         (error) => {
-          console.log(error)
-          reject();
+          console.log(error);
         }
       );
   }
@@ -374,8 +366,7 @@ export default class Area extends React.Component {
             this.saveArea(area);
           },
           (error) => {
-            console.log(error)
-            reject();
+            console.log(error);
           }
         );
     }
@@ -479,10 +470,12 @@ export default class Area extends React.Component {
         let theme = DARK_THEME;
         theme.backgroundColor = VARIABLES.BLUE_DARK;
         theme.primaryColorVariant = VARIABLES.BLUE_MEDIUM;
+        theme.fontSize = 20;
         return (
           <View style={styles.countryPicker}>
             <CountryPicker theme={theme} countryCodes={this.state.option.items}
                            onSelect={(country) => this.setCountry(country)} />
+            <FontAwesomeIcon style={styles.editIcon} name={'pencil'} size={20} color={VARIABLES.WHITE} />
           </View>
         );
       case 'region':
@@ -522,7 +515,8 @@ export default class Area extends React.Component {
 
     return (
       <VictoryChart theme={chartTheme}
-                    height={Dimensions.get('window').height/4}>
+                    height={Dimensions.get('window').height/4}
+                    style={{}}>
         <VictoryAxis
           fixLabelOverlap
           tickFormat={(dateString) => {
@@ -680,20 +674,25 @@ export default class Area extends React.Component {
   }
 
   render() {
-    return (
+    const showingCharts = !(this.state.option || this.state.tempArea) && (this.state.area && this.state.timeline);
+    const content = (
+      <View style={styles.wrapper}>
+        <SafeAreaView style={styles.area}>
+          <View>
+            <Text style={styles.title}>
+              COVID-19 In Your Area
+            </Text>
+          </View>
+          <View style={styles.main}>
+            {this.renderMain()}
+          </View>
+        </SafeAreaView>
+      </View>
+    );
+
+    return showingCharts ? (content) : (
       <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-        <View style={styles.wrapper}>
-          <SafeAreaView style={styles.area}>
-            <View>
-              <Text style={styles.title}>
-                COVID-19 In Your Area
-              </Text>
-            </View>
-            <View style={styles.main}>
-              {this.renderMain()}
-            </View>
-          </SafeAreaView>
-        </View>
+        {content}
       </TouchableWithoutFeedback>
     );
   }
@@ -745,7 +744,11 @@ const styles = StyleSheet.create({
     marginTop: VARIABLES.GUTTER,
     display: 'flex',
     flexDirection: 'row',
-    justifyContent: 'center'
+    justifyContent: 'center',
+  },
+
+  editIcon: {
+    marginLeft: VARIABLES.GUTTER_MINI
   },
 
   selectWrap: {
