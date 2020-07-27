@@ -11,7 +11,7 @@ import _ from 'lodash';
 import { VARIABLES } from '../common/style.js';
 
 const WORLD_BASEURL = 'https://api.covid19api.com';
-const US_BASEURL = 'https://disease.sh/v3/covid-19';
+const COVID_BASEURL = 'https://disease.sh/v3/covid-19';
 const PLACEHOLDER = 'PLACEHOLDER';
 
 function toTitleCase(str) {
@@ -65,7 +65,7 @@ export default class Area extends React.Component {
       let area = _.cloneDeep(this.state.area);
       if (area.country.code === 'US') {
         if (area.subregion) {
-          fetch(`${US_BASEURL}/nyt/counties/${area.subregion.code}`)
+          fetch(`${COVID_BASEURL}/nyt/counties/${area.subregion.code}`)
             .then(res => res.json())
             .then(
               (result) => {
@@ -77,13 +77,13 @@ export default class Area extends React.Component {
                 });
               },
               (error) => {
-                console.log(error);
+                console.warn(error);
               }
             );
         }
 
         if (area.region) {
-          fetch(`${US_BASEURL}/nyt/states/${area.region.name}`)
+          fetch(`${COVID_BASEURL}/nyt/states/${area.region.name}`)
             .then(res => res.json())
             .then(
               (result) => {
@@ -94,12 +94,12 @@ export default class Area extends React.Component {
                 });
               },
               (error) => {
-                console.log(error);
+                console.warn(error);
               }
             );
         }
 
-        fetch(`${US_BASEURL}/nyt/usa`)
+        fetch(`${COVID_BASEURL}/nyt/usa`)
           .then(res => res.json())
           .then(
             (result) => {
@@ -110,19 +110,52 @@ export default class Area extends React.Component {
               });
             },
             (error) => {
-              console.log(error);
+              console.warn(error);
             }
           );
       } else {
         if (area.region) {
-          fetch(`${US_BASEURL}/historical/${area.country.code}/${area.region.code}?lastdays=all`)
+          fetch(`${COVID_BASEURL}/historical/${area.country.code}/${area.region.code}?lastdays=all`)
             .then(res => res.json())
             .then(
               (result) => {
-                console.log(result);
-                if (!result.timeline) return;
-
                 let timeline = _.cloneDeep(this.state.timeline || {});
+                if (!result.timeline) {
+                  timeline.region = { error: 'Sorry, data not available.' }
+                } else {
+                  let entries = [];
+                  for (const key in result.timeline.cases) {
+                    const date = new Date(Date.parse(key));
+                    let entry = {
+                      date: `${date.getFullYear()}-${(date.getMonth() + 1 + '').padStart(2, '0')}-${(date.getDate() + '').padStart(2, '0')}`,
+                      timestamp: date.valueOf(),
+                      cases: result.timeline.cases[key],
+                      deaths: result.timeline.deaths[key],
+                    }
+                    entries.push(entry);
+                  }
+
+                  timeline.region = addRateOfChange(entries.sort((a, b) => a.timestamp - b.timestamp));
+                }
+
+                this.setState({
+                  timeline: timeline
+                });
+              },
+              (error) => {
+                console.warn(error);
+              }
+            );
+        }
+
+        fetch(`${COVID_BASEURL}/historical/${area.country.code}?lastdays=all`)
+          .then(res => res.json())
+          .then(
+            (result) => {
+              let timeline = _.cloneDeep(this.state.timeline || {});
+              if (!result.timeline) {
+                timeline.country = { error: 'Sorry, data not available.' }
+              } else {
                 let entries = [];
                 for (const key in result.timeline.cases) {
                   const date = new Date(Date.parse(key));
@@ -135,50 +168,20 @@ export default class Area extends React.Component {
                   entries.push(entry);
                 }
 
-                timeline.region = addRateOfChange(entries.sort((a, b) => a.timestamp - b.timestamp));
-
-                this.setState({
-                  timeline: timeline
-                });
-              },
-              (error) => {
-                console.log(error);
+                timeline.country = addRateOfChange(entries.sort((a, b) => a.timestamp - b.timestamp));
               }
-            );
-        }
-
-        fetch(`${US_BASEURL}/historical/${area.country.code}?lastdays=all`)
-          .then(res => res.json())
-          .then(
-            (result) => {
-              if (!result.timeline) return;
-
-              let timeline = _.cloneDeep(this.state.timeline || {});
-              let entries = [];
-              for (const key in result.timeline.cases) {
-                const date = new Date(Date.parse(key));
-                let entry = {
-                  date: `${date.getFullYear()}-${(date.getMonth() + 1 + '').padStart(2, '0')}-${(date.getDate() + '').padStart(2, '0')}`,
-                  timestamp: date.valueOf(),
-                  cases: result.timeline.cases[key],
-                  deaths: result.timeline.deaths[key],
-                }
-                entries.push(entry);
-              }
-
-              timeline.country = addRateOfChange(entries.sort((a, b) => a.timestamp - b.timestamp));
 
               this.setState({
                 timeline: timeline
               });
             },
             (error) => {
-              console.log(error);
+              console.warn(error);
             }
           );
       }
 
-      fetch(`${US_BASEURL}/historical/all?lastdays=all`)
+      fetch(`${COVID_BASEURL}/historical/all?lastdays=all`)
         .then(res => res.json())
         .then(
           (result) => {
@@ -202,7 +205,7 @@ export default class Area extends React.Component {
             });
           },
           (error) => {
-            console.log(error);
+            console.warn(error);
           }
         );
 
@@ -233,7 +236,7 @@ export default class Area extends React.Component {
               });
             },
             (error) => {
-              console.log(error);
+              console.warn(error);
             }
           );
       }
@@ -256,7 +259,7 @@ export default class Area extends React.Component {
   }
 
   async loadRegions(countryCode) {
-    fetch(`${US_BASEURL}/historical/${countryCode}?lastdays=1`)
+    fetch(`${COVID_BASEURL}/historical/${countryCode}?lastdays=1`)
       .then(res => res.json())
       .then(
         (result) => {
@@ -295,7 +298,7 @@ export default class Area extends React.Component {
           });
         },
         (error) => {
-          console.log(error);
+          console.warn(error);
         }
       );
   }
@@ -366,7 +369,7 @@ export default class Area extends React.Component {
             this.saveArea(area);
           },
           (error) => {
-            console.log(error);
+            console.warn(error);
           }
         );
     }
@@ -582,6 +585,23 @@ export default class Area extends React.Component {
     );
   }
 
+  renderCharts(key) {
+    if (this.state.timeline[key].error) {
+      return (
+        <Text style={styles.areaError}>
+          {this.state.timeline[key].error}
+        </Text>
+      );
+    } else {
+      return (
+        <View>
+          {this.renderChart(this.state.timeline[key], 'Daily Cases', 'newCases', VARIABLES.YELLOW)}
+          {this.renderChart(this.state.timeline[key], 'Daily Deaths', 'newDeaths', VARIABLES.ORANGE)}
+        </View>
+      );
+    }
+  }
+
   renderMain() {
     if (this.state.option || this.state.tempArea) {
       let countryText, regionText;
@@ -644,8 +664,7 @@ export default class Area extends React.Component {
             <Text style={styles.areaName}>
               {this.state.area.country.name}
             </Text>
-            {this.renderChart(this.state.timeline.country, 'Daily Cases', 'newCases', VARIABLES.YELLOW)}
-            {this.renderChart(this.state.timeline.country, 'Daily Deaths', 'newDeaths', VARIABLES.ORANGE)}
+            {this.renderCharts('country')}
           </View>
         );
       }
@@ -824,5 +843,11 @@ const styles = StyleSheet.create({
     lineHeight: 30,
     color: VARIABLES.WHITE,
     textAlign: 'center'
+  },
+
+  areaError: {
+    color: VARIABLES.WHITE,
+    textAlign: 'center',
+    paddingVertical: VARIABLES.GUTTER
   }
 });
