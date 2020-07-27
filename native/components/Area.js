@@ -1,5 +1,6 @@
 import React from 'react';
 import { Keyboard, TouchableWithoutFeedback, StyleSheet, Dimensions, View, Text, SafeAreaView, ScrollView, Animated, Easing } from 'react-native';
+import Button from 'react-native-button';
 import { Sae } from 'react-native-textinput-effects';
 import AsyncStorage from '@react-native-community/async-storage';
 import CountryPicker, { DARK_THEME } from 'react-native-country-picker-modal';
@@ -226,21 +227,26 @@ export default class Area extends React.Component {
           area: area
         });
       } else {
-        fetch(`${WORLD_BASEURL}/countries`)
-          .then(res => res.json())
-          .then(
-            (result) => {
-              this.setState({
-                option: {
-                  level: 'country',
-                  items: result.map(item => item.ISO2)
-                }
-              });
-            },
-            (error) => {
-              console.warn(error);
-            }
-          );
+        // fetch(`${WORLD_BASEURL}/countries`)
+        //   .then(res => res.json())
+        //   .then(
+        //     (result) => {
+        //       this.setState({
+        //         option: {
+        //           level: 'country',
+        //           items: result.map(item => item.ISO2)
+        //         }
+        //       });
+        //     },
+        //     (error) => {
+        //       console.warn(error);
+        //     }
+        //   );
+        this.setState({
+          option: {
+            level: 'country'
+          }
+        });
       }
     } catch(e) {
       // try again
@@ -255,6 +261,23 @@ export default class Area extends React.Component {
         area: area,
         tempArea: null
       });
+    } catch(e) {
+      console.warn('Error saving area:', e)
+    }
+  }
+
+  async clearArea() {
+    try {
+      this.setState({
+        area: null,
+        tempArea: null,
+        requestedData: null,
+        timeline: null,
+        option: {
+          level: 'country'
+        }
+      });
+      await AsyncStorage.removeItem('area');
     } catch(e) {
       console.warn('Error saving area:', e)
     }
@@ -478,7 +501,7 @@ export default class Area extends React.Component {
         theme.fontSize = 20;
         return (
           <View style={styles.countryPicker}>
-            <CountryPicker theme={theme} countryCodes={this.state.option.items}
+            <CountryPicker theme={theme} //countryCodes={this.state.option.items}
                            onSelect={(country) => this.setCountry(country)} />
             <FontAwesomeIcon style={styles.editIcon} name={'pencil'} size={20} color={VARIABLES.WHITE} />
           </View>
@@ -686,6 +709,10 @@ export default class Area extends React.Component {
           {regionView}
           {countryView}
           {worldView}
+          <Button style={styles.changeArea}
+                  onPress={() => this.clearArea()}>
+            Change Area
+          </Button>
         </ScrollView>
       )
     }
@@ -825,6 +852,16 @@ const styles = StyleSheet.create({
     marginLeft: 'auto',
     marginRight: 'auto',
     textAlign: 'center'
+  },
+
+  changeArea: {
+    backgroundColor: VARIABLES.WHITE,
+    color: VARIABLES.BLUE_DARK,
+    width: 140,
+    position: 'relative',
+    left: '50%',
+    transform: [{translateX: -70}],
+    padding: VARIABLES.GUTTER_MINI
   },
 
   charts: {
