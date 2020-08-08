@@ -100,13 +100,13 @@ var Meta = function (_React$Component) {
         allTextFactors = textFactors.slice(0, -1).join(', ') + ', and ' + textFactors[textFactors.length - 1];
       }
 
-      return 'GSV Risk | An event with ' + allTextFactors + ' has COVID-19 risk comparable to ' + (0, _util.getGsvText)(gsv) + ' grocery store visits.';
+      return 'GSV Risk | An event with ' + allTextFactors + ' has COVID-19 exposure risk comparable to ' + (0, _util.getGsvText)(gsv) + ' grocery store visits.';
     }
   }, {
     key: 'render',
     value: function render() {
       var title = 'Grocery Store Visits | Calculate COVID-19 risk in terms we all know - going to the grocery store.';
-      var description = 'GSV Risk is a web application that allows you to approximate an event\'s COVID-19 risk in units we all know - grocery store visits.';
+      var description = 'GSV Risk is a web application that allows you to approximate an event\'s COVID-19 exposure risk in units we all know - grocery store visits.';
       var logoPath = this.props.host + '/images/default.png';
       var logoSize = '600';
       var logoAlt = 'GSV Risk logo';

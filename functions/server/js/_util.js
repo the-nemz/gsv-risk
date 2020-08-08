@@ -24,16 +24,12 @@ var INITIAL_FACTORS = exports.INITIAL_FACTORS = [{
   customizeBase: false,
   type: 'number',
   options: [{
-    'value': 2,
-    'label': 'Brief outdoor contact',
-    'example': 'Passing by somone on a sidewalk'
-  }, {
     'value': 5,
-    'label': 'Brief indoor contact',
+    'label': 'Brief contact',
     'example': 'Slipping by somone in a store aisle'
   }, {
     'value': 10,
-    'label': 'Brief close contact',
+    'label': 'Close contact',
     'example': 'Sharing a small elevator'
   }, {
     'value': 25,
@@ -42,10 +38,31 @@ var INITIAL_FACTORS = exports.INITIAL_FACTORS = [{
   }, {
     'value': 50,
     'label': 'Significant physical contact',
-    'example': 'Repeated hugging, shoulder to shoulder, etc'
+    'example': 'Hugging, shoulder to shoulder, etc'
   }],
   overrideBase: false,
   baseValue: 5,
+  input: null
+}, {
+  id: 'setting',
+  prompt: 'Will you be indoors or outdoors?',
+  customizeBase: false,
+  type: 'number',
+  options: [{
+    'value': 100,
+    'label': 'Indoors',
+    'example': 'Event will be mostly indoors'
+  }, {
+    'value': 40,
+    'label': 'Outdoors',
+    'example': 'Event will be mostly outdoors'
+  }, {
+    'value': 80,
+    'label': 'Mixed indoors and outdoors',
+    'example': 'Event will be mixed indoors and outdoors'
+  }],
+  overrideBase: false,
+  baseValue: 100,
   input: null
 }, {
   id: 'interactions',
@@ -108,8 +125,9 @@ function calculateGsv(factors) {
   }
 
   var resultFromFactorValues = function resultFromFactorValues(factorValues) {
-    var transmit = factorValues.transmission / 100 * (1 - factorValues.masks / 100) + MASK_HELP_RATIO * factorValues.transmission / 100 * (factorValues.masks / 100);
-    var inner = 1 - transmit * (factorValues.infected / 100);
+    var transmit = factorValues.transmission / 100 * (factorValues.setting / 100);
+    var maskTransmit = transmit * (1 - factorValues.masks / 100) + MASK_HELP_RATIO * transmit * (factorValues.masks / 100);
+    var inner = 1 - maskTransmit * (factorValues.infected / 100);
     var result = 1 - inner ** factorValues.interactions;
     return result;
   };
