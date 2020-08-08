@@ -25,7 +25,7 @@
     "webpack-cli": "^3.3.11"
   },
   "engines": {
-    "node": "8"
+    "node": "8.16.x"
   },
   "scripts": {
     "util": "cp app/src/js/util.js server/js/_util.js",
