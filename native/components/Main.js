@@ -5,6 +5,7 @@ import _ from 'lodash';
 
 import Area from './Area.js';
 import Calculator from './Calculator.js';
+import Landing from './Landing.js';
 import History from './History.js';
 
 import { INITIAL_FACTORS } from '../common/_util.js';
@@ -28,9 +29,25 @@ export default class Main extends React.Component {
   }
 
   componentDidMount() {
+    this.getLastOpenedTime();
     this.getNextEventId();
     this.getBase();
     this.getHistory();
+  }
+
+  async getLastOpenedTime() {
+    try {
+      const lastOpened = await AsyncStorage.getItem('lastOpened');
+      if (lastOpened == null) {
+        this.setState({
+          showLanding: true
+        });
+      }
+      // AsyncStorage.setItem('lastOpened', Date.now());
+    } catch(e) {
+      // try again
+      this.getLastOpenedTime();
+    }
   }
 
   async getNextEventId() {
@@ -176,7 +193,13 @@ export default class Main extends React.Component {
     this.saveHistory(history);
   }
 
-  render() {
+  renderLanding() {
+    return (
+      <Landing />
+    );
+  }
+
+  renderMain() {
     return (
       <Pages>
         <Calculator base={this.state.base}
@@ -187,5 +210,9 @@ export default class Main extends React.Component {
         <Area />
       </Pages>
     );
+  }
+
+  render() {
+    return this.state.showLanding ? this.renderLanding() : this.renderMain();
   }
 }
