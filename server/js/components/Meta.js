@@ -34,12 +34,12 @@ export default class Meta extends React.Component {
       allTextFactors = `${textFactors.slice(0, -1).join(', ')}, and ${textFactors[textFactors.length - 1]}`;
     }
 
-    return `GSV Risk | An event with ${allTextFactors} has COVID-19 risk comparable to ${getGsvText(gsv)} grocery store visits.`;
+    return `GSV Risk | An event with ${allTextFactors} has COVID-19 exposure risk comparable to ${getGsvText(gsv)} grocery store visits.`;
   }
 
   render() {
     let title = 'Grocery Store Visits | Calculate COVID-19 risk in terms we all know - going to the grocery store.';
-    let description = 'GSV Risk is a web application that allows you to approximate an event\'s COVID-19 risk in units we all know - grocery store visits.';
+    let description = 'GSV Risk is a web application that allows you to approximate an event\'s COVID-19 exposure risk in units we all know - grocery store visits.';
     let logoPath = `${this.props.host}/images/default.png`;
     let logoSize = '600';
     let logoAlt = 'GSV Risk logo';

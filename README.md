@@ -23,6 +23,9 @@ In the root directory, you can run:
 ### `yarn start`
 Builds `public/bundle.js` for running server locally.
 
+### `yarn util`
+Copies `app/src/js/util.js` into `server/js/_util.js` as it is shared by the server and the front end. It is automatically called by each of the other commands defined above.
+
 ### `yarn babel`
 Compiles `index.js` and the code in `server/` into `functions/`.
 
@@ -34,5 +37,5 @@ Builds all aspects of the project with one command. That includes:
 * inserting the comment into `<head>` of `index.html` that the server looks for
 * compiling the server code and running yarn
 
-### `yarn util`
-Copies `app/src/js/util.js` into `server/js/_util.js` as it is shared by the server and the front end. It is automatically called by each of the other commands defined above.
+### `yarn serveall`
+Starts a local server for firebase functions and hosting.

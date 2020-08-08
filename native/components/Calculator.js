@@ -79,10 +79,12 @@ export default class Calculator extends React.Component {
   renderFactors() {
     let factors = [];
     for (const factor of this.state.factors) {
-      factors.push(
-        <Factor factor={factor} key={factor.id}
-                onFactorInputChange={(factor) => this.handleFactorInputChange(factor)} />
-      );
+      if (!factor.overrideBase) {
+        factors.push(
+          <Factor factor={factor} key={factor.id}
+                  onFactorInputChange={(factor) => this.handleFactorInputChange(factor)} />
+        );
+      }
       if (factor.input === null || factor.input === undefined) {
         break;
       }

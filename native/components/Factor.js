@@ -276,7 +276,9 @@ const styles = StyleSheet.create({
 
   selectWrap: {
     display: 'flex',
-    flexDirection: 'column'
+    flexDirection: 'column',
+    marginTop: VARIABLES.GUTTER,
+    marginBottom: VARIABLES.GUTTER
   },
 
   selectPrompt: {

@@ -15,18 +15,13 @@ export const INITIAL_FACTORS = [
     type: 'number',
     options: [
       {
-        'value': 2,
-        'label': 'Brief outdoor contact',
-        'example': 'Passing by somone on a sidewalk'
-      },
-      {
         'value': 5,
-        'label': 'Brief indoor contact',
+        'label': 'Brief contact',
         'example': 'Slipping by somone in a store aisle'
       },
       {
         'value': 10,
-        'label': 'Brief close contact',
+        'label': 'Close contact',
         'example': 'Sharing a small elevator'
       },
       {
@@ -37,11 +32,37 @@ export const INITIAL_FACTORS = [
       {
         'value': 50,
         'label': 'Significant physical contact',
-        'example': 'Repeated hugging, shoulder to shoulder, etc'
+        'example': 'Hugging, shoulder to shoulder, etc'
       }
     ],
     overrideBase: false,
     baseValue: 5,
+    input: null
+  },
+  {
+    id: 'setting',
+    prompt: 'Will you be indoors or outdoors?',
+    customizeBase: false,
+    type: 'number',
+    options: [
+      {
+        'value': 100,
+        'label': 'Indoors',
+        'example': 'Event will be mostly indoors'
+      },
+      {
+        'value': 40,
+        'label': 'Outdoors',
+        'example': 'Event will be mostly outdoors'
+      },
+      {
+        'value': 80,
+        'label': 'Mixed indoors and outdoors',
+        'example': 'Event will be mixed indoors and outdoors'
+      },
+    ],
+    overrideBase: false,
+    baseValue: 100,
     input: null
   },
   {
@@ -87,8 +108,9 @@ export function calculateGsv(factors) {
   }
 
   const resultFromFactorValues = (factorValues) => {
-    const transmit = (factorValues.transmission / 100) * (1 - (factorValues.masks / 100)) + (MASK_HELP_RATIO * factorValues.transmission / 100) * (factorValues.masks / 100);
-    const inner = 1 - (transmit * (factorValues.infected / 100));
+    const transmit = (factorValues.transmission / 100) * (factorValues.setting / 100)
+    const maskTransmit = transmit * (1 - (factorValues.masks / 100)) + (MASK_HELP_RATIO * transmit) * (factorValues.masks / 100);
+    const inner = 1 - (maskTransmit * (factorValues.infected / 100));
     const result = 1 - (inner ** factorValues.interactions);
     return result;
   }
