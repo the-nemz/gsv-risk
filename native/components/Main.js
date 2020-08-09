@@ -195,7 +195,7 @@ export default class Main extends React.Component {
 
   renderLanding() {
     return (
-      <Landing />
+      <Landing onClose={() => this.setState({showLanding: false})} />
     );
   }
 
