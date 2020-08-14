@@ -1,4 +1,5 @@
 import React from 'react';
+import { View } from 'react-native';
 import { Pages } from 'react-native-pages';
 import AsyncStorage from '@react-native-community/async-storage';
 import _ from 'lodash';
@@ -11,10 +12,14 @@ import History from './History.js';
 import { INITIAL_FACTORS } from '../common/_util.js';
 import { VARIABLES } from '../common/style.js';
 
+const HISTORY_PAGE = 2;
+
 export default class Main extends React.Component {
 
   constructor(props) {
     super(props);
+
+    this.pageRef = React.createRef();
 
     let base = {};
     for (const factor of INITIAL_FACTORS) {
@@ -24,7 +29,8 @@ export default class Main extends React.Component {
     }
 
     this.state = {
-      base: base
+      base: base,
+      pageIndex: 0
     };
   }
 
@@ -43,7 +49,7 @@ export default class Main extends React.Component {
           showLanding: true
         });
       }
-      // AsyncStorage.setItem('lastOpened', Date.now());
+      AsyncStorage.setItem('lastOpened', Date.now() + '')
     } catch(e) {
       // try again
       this.getLastOpenedTime();
@@ -201,13 +207,15 @@ export default class Main extends React.Component {
 
   renderMain() {
     return (
-      <Pages>
+      <Pages ref={this.pageRef}
+             // TODO: fix lag with onScrollEnd
+             onScrollEnd={() => this.setState({pageIndex: this.pageRef.current.activeIndex})}>
         <Calculator base={this.state.base}
                     onSaveEvent={(factors) => this.saveEvent(factors)}
                     onFactorBaseChange={(factor, base) => this.handleFactorBaseChange(factor, base)} />
         <History history={this.state.history}
                  onUpdateEvent={(event) => this.handleUpdateEvent(event)} />
-        <Area />
+        <Area loadCharts={this.state.pageIndex === HISTORY_PAGE} />
       </Pages>
     );
   }

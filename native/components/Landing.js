@@ -42,7 +42,8 @@ export default class Landing extends React.Component {
 
     this.state = {
       gsvPosition: 0,
-      factorsPosition: 0
+      factorsPosition: 0,
+      pageIndex: 0
     };
   }
 
@@ -130,13 +131,13 @@ export default class Landing extends React.Component {
             {content}
             <Button style={styles.save}
                     onPress={() => {
-                      if (this.pageRef.current && this.pageRef.current.activeIndex + 1 < NUM_PAGES) {
-                        this.pageRef.current.scrollToPage(this.pageRef.current.activeIndex + 1);
+                      if (this.state.pageIndex + 1 < NUM_PAGES) {
+                        this.pageRef.current.scrollToPage(this.state.pageIndex + 1);
                       } else {
                         this.props.onClose();
                       }
                     }}>
-              {!this.pageRef.current || this.pageRef.current.activeIndex + 1 < NUM_PAGES ? 'Next' : 'Close'}
+              {this.state.pageIndex + 1 < NUM_PAGES ? 'Next' : 'Close'}
             </Button>
           </View>
         </SafeAreaView>
@@ -147,7 +148,7 @@ export default class Landing extends React.Component {
   render() {
     return (
       <Pages ref={this.pageRef}
-             onScrollEnd={() => this.setState(this.state)}>
+             onScrollEnd={() => this.setState({pageIndex: this.pageRef.current.activeIndex})}>
         {this.renderSlide('What is a GSV?', this.renderGSVContent())}
         {this.renderSlide('Do you have examples?', this.renderFactorsContent())}
       </Pages>

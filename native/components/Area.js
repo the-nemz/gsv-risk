@@ -216,6 +216,12 @@ export default class Area extends React.Component {
         requestedData: true
       });
     }
+
+    if (this.props.loadCharts && !this.state.loadCharts) {
+      this.setState({
+        loadCharts: true
+      });
+    }
   }
 
   async getArea() {
@@ -657,7 +663,7 @@ export default class Area extends React.Component {
           {this.renderInput()}
         </View>
       );
-    } else if (this.state.area && this.state.timeline) {
+    } else if (this.state.area && this.state.timeline && this.state.loadCharts) {
       let subregionView, regionView, countryView, worldView;
       if (this.state.timeline.subregion) {
         subregionView = (
@@ -719,7 +725,7 @@ export default class Area extends React.Component {
   }
 
   render() {
-    const showingCharts = !(this.state.option || this.state.tempArea) && (this.state.area && this.state.timeline);
+    const hasTimeline = !(this.state.option || this.state.tempArea) && (this.state.area && this.state.timeline);
     const content = (
       <View style={styles.wrapper}>
         <SafeAreaView style={styles.area}>
@@ -735,7 +741,7 @@ export default class Area extends React.Component {
       </View>
     );
 
-    return showingCharts ? (content) : (
+    return hasTimeline ? (content) : (
       <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
         {content}
       </TouchableWithoutFeedback>
