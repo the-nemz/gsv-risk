@@ -719,7 +719,7 @@ export default class Area extends React.Component {
   }
 
   render() {
-    const showingCharts = !(this.state.option || this.state.tempArea) && (this.state.area && this.state.timeline);
+    const hasTimeline = !(this.state.option || this.state.tempArea) && (this.state.area && this.state.timeline);
     const content = (
       <View style={styles.wrapper}>
         <SafeAreaView style={styles.area}>
@@ -735,7 +735,7 @@ export default class Area extends React.Component {
       </View>
     );
 
-    return showingCharts ? (content) : (
+    return hasTimeline ? (content) : (
       <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
         {content}
       </TouchableWithoutFeedback>
@@ -769,7 +769,7 @@ const styles = StyleSheet.create({
     width: '100%',
     flexGrow: 1,
     paddingHorizontal: VARIABLES.GUTTER,
-    paddingBottom: VARIABLES.GUTTER*3
+    paddingBottom: VARIABLES.GUTTER
   },
 
   drilldown: {

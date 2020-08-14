@@ -201,15 +201,15 @@ const styles = StyleSheet.create({
 
   main: {
     flexGrow: 1,
-    paddingBottom: VARIABLES.GUTTER*3
+    paddingBottom: VARIABLES.GUTTER*2
   },
 
   chart: {
+    marginBottom: -VARIABLES.GUTTER_MINI,
     paddingHorizontal: VARIABLES.GUTTER
   },
 
   events: {
-    marginTop: -VARIABLES.GUTTER_MINI,
     borderTopColor: VARIABLES.BLUE_MEDIUM,
     borderTopWidth: 2,
     paddingHorizontal: VARIABLES.GUTTER

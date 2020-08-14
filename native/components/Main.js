@@ -1,19 +1,26 @@
 import React from 'react';
-import { Pages } from 'react-native-pages';
+import { NavigationContainer, DarkTheme } from '@react-navigation/native';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import AsyncStorage from '@react-native-community/async-storage';
+import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome5';
 import _ from 'lodash';
 
 import Area from './Area.js';
 import Calculator from './Calculator.js';
+import Landing from './Landing.js';
 import History from './History.js';
 
 import { INITIAL_FACTORS } from '../common/_util.js';
 import { VARIABLES } from '../common/style.js';
 
+const Tab = createBottomTabNavigator();
+
 export default class Main extends React.Component {
 
   constructor(props) {
     super(props);
+
+    this.navRef = React.createRef();
 
     let base = {};
     for (const factor of INITIAL_FACTORS) {
@@ -23,14 +30,31 @@ export default class Main extends React.Component {
     }
 
     this.state = {
-      base: base
+      base: base,
+      pageIndex: 0
     };
   }
 
   componentDidMount() {
+    this.getLastOpenedTime();
     this.getNextEventId();
     this.getBase();
     this.getHistory();
+  }
+
+  async getLastOpenedTime() {
+    try {
+      const lastOpened = await AsyncStorage.getItem('lastOpened');
+      if (lastOpened == null) {
+        this.setState({
+          showLanding: true
+        });
+      }
+      AsyncStorage.setItem('lastOpened', Date.now() + '')
+    } catch(e) {
+      // try again
+      this.getLastOpenedTime();
+    }
   }
 
   async getNextEventId() {
@@ -176,16 +200,62 @@ export default class Main extends React.Component {
     this.saveHistory(history);
   }
 
-  render() {
+  renderLanding() {
     return (
-      <Pages>
-        <Calculator base={this.state.base}
-                    onSaveEvent={(factors) => this.saveEvent(factors)}
-                    onFactorBaseChange={(factor, base) => this.handleFactorBaseChange(factor, base)} />
-        <History history={this.state.history}
-                 onUpdateEvent={(event) => this.handleUpdateEvent(event)} />
-        <Area />
-      </Pages>
+      <Landing onClose={() => this.setState({showLanding: false})} />
     );
   }
+
+  renderMain() {
+    return (
+      <NavigationContainer ref={this.navRef} theme={NavTheme}>
+        <Tab.Navigator initialRouteName="Calculator"
+          screenOptions={({ route }) => ({
+            tabBarIcon: () => {
+              const icons = {
+                Calculator: 'calculator',
+                History: 'history',
+                Area: 'chart-bar',
+              };
+
+              const curr = this.navRef.current && this.navRef.current.getCurrentRoute();
+              const color = curr && curr.name === route.name ? VARIABLES.WHITE : VARIABLES.BLUE_LIGHT;
+              return (
+                <FontAwesomeIcon name={icons[route.name] || 'circle'} size={20} color={color} />
+              );
+            },
+          })}
+        >
+          <Tab.Screen name="Calculator">
+            {props => <Calculator base={this.state.base}
+                                  onSaveEvent={(factors) => this.saveEvent(factors)}
+                                  onFactorBaseChange={(factor, base) => this.handleFactorBaseChange(factor, base)} />}
+          </Tab.Screen>
+          <Tab.Screen name="History">
+            {props => <History history={this.state.history}
+                               onUpdateEvent={(event) => this.handleUpdateEvent(event)} />}
+          </Tab.Screen>
+          <Tab.Screen name="Area">
+            {props => <Area />}
+          </Tab.Screen>
+        </Tab.Navigator>
+      </NavigationContainer>
+    )
+  }
+
+  render() {
+    return this.state.showLanding ? this.renderLanding() : this.renderMain();
+  }
 }
+
+const NavTheme = {
+  ...DarkTheme,
+  colors: {
+    ...DarkTheme.colors,
+    background: VARIABLES.BLUE_DARK,
+    card: VARIABLES.BLUE_DARK,
+    border: VARIABLES.BLUE_DARK,
+    primary: VARIABLES.WHITE,
+    text: VARIABLES.BLUE_LIGHT,
+  },
+};
