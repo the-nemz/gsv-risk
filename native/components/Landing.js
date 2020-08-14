@@ -7,7 +7,7 @@ import _ from 'lodash';
 import Results from './Results.js';
 import Factor from './Factor.js';
 
-import { INITIAL_FACTORS, calculateGsv, getInputFromFactor } from '../common/_util.js';
+import { INITIAL_FACTORS, calculateGsv } from '../common/_util.js';
 import { VARIABLES } from '../common/style.js';
 
 const NUM_PAGES = 2;
