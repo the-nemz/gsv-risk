@@ -1,7 +1,8 @@
 import React from 'react';
-import { View } from 'react-native';
-import { Pages } from 'react-native-pages';
+import { NavigationContainer, DarkTheme } from '@react-navigation/native';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import AsyncStorage from '@react-native-community/async-storage';
+import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome5';
 import _ from 'lodash';
 
 import Area from './Area.js';
@@ -12,14 +13,14 @@ import History from './History.js';
 import { INITIAL_FACTORS } from '../common/_util.js';
 import { VARIABLES } from '../common/style.js';
 
-const HISTORY_PAGE = 2;
+const Tab = createBottomTabNavigator();
 
 export default class Main extends React.Component {
 
   constructor(props) {
     super(props);
 
-    this.pageRef = React.createRef();
+    this.navRef = React.createRef();
 
     let base = {};
     for (const factor of INITIAL_FACTORS) {
@@ -207,20 +208,54 @@ export default class Main extends React.Component {
 
   renderMain() {
     return (
-      <Pages ref={this.pageRef}
-             // TODO: fix lag with onScrollEnd
-             onScrollEnd={() => this.setState({pageIndex: this.pageRef.current.activeIndex})}>
-        <Calculator base={this.state.base}
-                    onSaveEvent={(factors) => this.saveEvent(factors)}
-                    onFactorBaseChange={(factor, base) => this.handleFactorBaseChange(factor, base)} />
-        <History history={this.state.history}
-                 onUpdateEvent={(event) => this.handleUpdateEvent(event)} />
-        <Area loadCharts={this.state.pageIndex === HISTORY_PAGE} />
-      </Pages>
-    );
+      <NavigationContainer ref={this.navRef} theme={NavTheme}>
+        <Tab.Navigator initialRouteName="Calculator"
+          screenOptions={({ route }) => ({
+            tabBarIcon: () => {
+              const icons = {
+                Calculator: 'calculator',
+                History: 'history',
+                Area: 'chart-bar',
+              };
+
+              const curr = this.navRef.current && this.navRef.current.getCurrentRoute();
+              const color = curr && curr.name === route.name ? VARIABLES.WHITE : VARIABLES.BLUE_LIGHT;
+              return (
+                <FontAwesomeIcon name={icons[route.name] || 'circle'} size={20} color={color} />
+              );
+            },
+          })}
+        >
+          <Tab.Screen name="Calculator">
+            {props => <Calculator base={this.state.base}
+                                  onSaveEvent={(factors) => this.saveEvent(factors)}
+                                  onFactorBaseChange={(factor, base) => this.handleFactorBaseChange(factor, base)} />}
+          </Tab.Screen>
+          <Tab.Screen name="History">
+            {props => <History history={this.state.history}
+                               onUpdateEvent={(event) => this.handleUpdateEvent(event)} />}
+          </Tab.Screen>
+          <Tab.Screen name="Area">
+            {props => <Area />}
+          </Tab.Screen>
+        </Tab.Navigator>
+      </NavigationContainer>
+    )
   }
 
   render() {
     return this.state.showLanding ? this.renderLanding() : this.renderMain();
   }
 }
+
+const NavTheme = {
+  ...DarkTheme,
+  colors: {
+    ...DarkTheme.colors,
+    background: VARIABLES.BLUE_DARK,
+    card: VARIABLES.BLUE_DARK,
+    border: VARIABLES.BLUE_DARK,
+    primary: VARIABLES.WHITE,
+    text: VARIABLES.BLUE_LIGHT,
+  },
+};

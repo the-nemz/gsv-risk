@@ -216,12 +216,6 @@ export default class Area extends React.Component {
         requestedData: true
       });
     }
-
-    if (this.props.loadCharts && !this.state.loadCharts) {
-      this.setState({
-        loadCharts: true
-      });
-    }
   }
 
   async getArea() {
@@ -663,7 +657,7 @@ export default class Area extends React.Component {
           {this.renderInput()}
         </View>
       );
-    } else if (this.state.area && this.state.timeline && this.state.loadCharts) {
+    } else if (this.state.area && this.state.timeline) {
       let subregionView, regionView, countryView, worldView;
       if (this.state.timeline.subregion) {
         subregionView = (
@@ -775,7 +769,7 @@ const styles = StyleSheet.create({
     width: '100%',
     flexGrow: 1,
     paddingHorizontal: VARIABLES.GUTTER,
-    paddingBottom: VARIABLES.GUTTER*3
+    paddingBottom: VARIABLES.GUTTER
   },
 
   drilldown: {
